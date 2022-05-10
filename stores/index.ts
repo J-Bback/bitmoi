@@ -1,6 +1,7 @@
 import { enableStaticRendering } from 'mobx-react';
 
 import NavStore from './NavStore';
+import AuthStore from './AuthStore';
 
 const isServer: boolean = typeof window === 'undefined';
 
@@ -9,8 +10,10 @@ let store: any = null;
 
 class RootStore {
   navStore;
+  authStore;
   constructor() {
     this.navStore = new NavStore();
+    this.authStore = new AuthStore();
   }
 }
 

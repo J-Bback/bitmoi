@@ -1,12 +1,9 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
-import styles from "./Nav.module.scss";
+import React, { useState, Fragment } from "react";
 import Image from "next/image";
+import Button from '../../atoms/Button';
 
-type Items = {
-	key: string;
-	label: string;
-};
+import styles from "./Nav.module.scss";
 
 interface Props {
 	setItem?: any;
@@ -14,9 +11,7 @@ interface Props {
 }
 
 const Nav = (props: Props) => {
-	console.log('PROPS', props);
 	const router = useRouter();
-	const [selected, setSelected] = useState('home');
 	const items = [
 		{ key: "exchange", label: "거래소" },
 		{ key: "ranking", label: "랭킹" },
@@ -24,36 +19,16 @@ const Nav = (props: Props) => {
 		{ key: "subscription", label: "구독" },
 		{ key: "community", label: "커뮤니티" },
 	];
-	const renderItems = () => {
-		return (
-			<div className={styles.itemWrap}>
-				{items.map((v, i) => {
-					return (
-						<div
-							key={"nav" + i}
-							className={selected === v.key ? styles.activeItem : styles.item}
-							onClick={() => selectItem(v.key)}
-						>
-							{v.label}
-						</div>
-					);
-				})}
-			</div>
-		);
-	};
 
 	const selectItem = (key: string) => {
-		if (key !== selected) {
-			setSelected(key);
-			// props.setItem(key);
+		if (!router.pathname.includes(key)) {
 			if (key === "exchange") {
-				router.push(
-					{
-						pathname: "/exchange",
-						query: { tab: "krw" },
-					},
+				router.push({
+					pathname: "/exchange",
+					query: { tab: "krw" },
+				},
 					undefined,
-					{ shallow: true }
+					{ shallow: true },
 				);
 				return;
 			}
@@ -61,22 +36,77 @@ const Nav = (props: Props) => {
 		}
 	};
 
+	const goToLogin = () => {
+		return (
+			router.push({
+				pathname: "/asset/login"
+			}, undefined,
+				{ shallow: true },
+			)
+		)
+	}
+
+	const goToSignUp = () => {
+		return (
+			router.push({
+				pathname: "/asset/signup"
+			}, undefined,
+				{ shallow: true },
+			)
+		)
+	}
+
+	const renderItems = () => {
+		return (
+			<div className={styles.item_container}>
+				<div className={styles.nav_logo} onClick={() => selectItem("home")}>
+					<Image
+						src="/images/candlestick.png"
+						alt="Search Button"
+						width={40}
+						height={40}
+					/>
+					<div className={router.pathname.includes('home') ? styles.active_title : styles.logo_title}>
+						{'BITMOI'}
+					</div>
+				</div>
+				<div className={styles.itemWrap}>
+					{items.map((v, i) => {
+						return (
+							<div
+								key={"nav" + i}
+								className={router.pathname.includes(v.key) ? styles.activeItem : styles.item}
+								onClick={() => selectItem(v.key)}
+							>
+								{v.label}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		);
+	};
+
+	const renderButtons = () => {
+		return (
+			<div className={styles.button_wrap}>
+				<div className={styles.login_btn} onClick={() => goToLogin()}>
+					{'로그인'}
+				</div>
+				<Button
+					btnText='회원가입'
+					className={styles.signup_btn}
+					btnClick={() => goToSignUp()}
+				/>
+			</div>
+		)
+	}
+
 	return (
 		<nav className={styles.nav}>
 			<div className={styles.nav_container}>
-				<div className={styles.nav_logo} onClick={() => selectItem("home")}>
-					<div style={{ marginRight: 10 }}>
-						<Image
-							src="/images/candlestick.png"
-							alt="Search Button"
-							width={40}
-							height={40}
-						/>
-					</div>
-					BITMOI
-				</div>
 				{renderItems()}
-				<div>SIGN IN</div>
+				{renderButtons()}
 			</div>
 		</nav>
 	);

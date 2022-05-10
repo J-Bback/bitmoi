@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import Cookies from 'universal-cookie';
+import JsonWebToken from 'jsonwebtoken';
 
 const cookies = new Cookies();
 
@@ -24,7 +25,8 @@ class AuthStore {
       expires: afterOneYear,
       path: '/',
     });
-    // const decodedToken = JsonWebToken.decode(jwt);
+    const decodedToken = JsonWebToken.decode(jwt);
+    console.log('decodedToken', decodedToken);
     this.jwt = jwt;
     // this.userId = decodedToken.userId;
     // this.name = decodedToken.name;

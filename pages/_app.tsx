@@ -32,10 +32,11 @@ MyApp.getInitialProps = async (appContext: any) => {
       return;
     }
 
-    appContext.ctx.isMobile = uaParser.getResult().device.type === 'mobile';
 
     if (appContext.ctx.isServer) {
-      await login(appContext.ctx.req.headers.cookie, appContext.ctx.mobxStore.authStore.login);
+      console.log('appContext.ctx.req.headers.cookie', appContext.ctx.req.headers.cookie);
+      console.log('appContext.ctx.mobxStore.authStore', appContext.ctx.mobxStore.authStore.login);
+      await login(appContext.ctx.req.headers.cookie, appContext.ctx.mobxStore.authStore.login); // authStore.login
     }
   }
   const appProps = await App.getInitialProps(appContext);
