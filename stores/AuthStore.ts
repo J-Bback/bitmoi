@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx';
 import Cookies from 'universal-cookie';
 import JsonWebToken from 'jsonwebtoken';
 
@@ -11,7 +11,6 @@ class AuthStore {
   phone = null;
   logged = false;
 
-  
   constructor() {
     makeAutoObservable(this);
   }
@@ -19,11 +18,12 @@ class AuthStore {
   login = async (jwt: any) => {
     const afterOneYear = new Date();
     afterOneYear.setFullYear(afterOneYear.getFullYear() + 1);
-    cookies.set(`${process.env.API_ENV}`, jwt, {
+    cookies.set('token', jwt, {
       domain: process.env.cookieDomain,
       maxAge: 12 * 60 * 60,
       expires: afterOneYear,
       path: '/',
+      secure: true,
     });
     const decodedToken = JsonWebToken.decode(jwt);
     console.log('decodedToken', decodedToken);
@@ -32,7 +32,7 @@ class AuthStore {
     // this.name = decodedToken.name;
     // this.phone = decodedToken.phone;
     this.logged = true;
-  }
+  };
 }
 
 export default AuthStore;

@@ -32,10 +32,9 @@ MyApp.getInitialProps = async (appContext: any) => {
       return;
     }
 
-
     if (appContext.ctx.isServer) {
-      console.log('appContext.ctx.req.headers.cookie', appContext.ctx.req.headers.cookie);
-      console.log('appContext.ctx.mobxStore.authStore', appContext.ctx.mobxStore.authStore.login);
+      console.log('쿠키 요청 헤더', appContext.ctx.req.headers);
+      console.log('인증 스토어 로그인', appContext.ctx.mobxStore.authStore.login);
       await login(appContext.ctx.req.headers.cookie, appContext.ctx.mobxStore.authStore.login); // authStore.login
     }
   }
@@ -44,7 +43,7 @@ MyApp.getInitialProps = async (appContext: any) => {
     ...appProps,
     initialMobxState: mobxStore,
   };
-}
+};
 
 function MyApp({ Component, pageProps }: any) {
   return (
@@ -61,7 +60,7 @@ function MyApp({ Component, pageProps }: any) {
       <Nav {...pageProps} />
       <Component {...pageProps} />
     </Provider>
-  )
+  );
 }
 
 export default MyApp;

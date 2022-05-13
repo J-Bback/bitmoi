@@ -1,0 +1,40 @@
+@import '../../styles/variables.scss';
+
+.table_scroll_style {
+  border-collapse: collapse;
+  border: 1px solid #eeeeee;
+  border-radius: 3px;
+  justify-content: center;
+  thead {
+    th {
+      font-size: 12px;
+      font-weight: 700;
+      height: 42px;
+      align-items: center;
+      border-left: none;
+      border-right: none;
+      padding: 5px;
+    }
+  }
+  tbody {
+    display: block;
+    max-height: 975px;
+    overflow-y: scroll;
+    th,
+    td {
+      font-size: 12px;
+      font-weight: 400;
+      border-left: none;
+      border-right: none;
+    }
+    tr:nth-child(even) {
+      background: rgba(56, 136, 230, 0.1);
+    }
+  }
+  thead,
+  tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+}

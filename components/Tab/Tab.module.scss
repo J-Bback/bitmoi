@@ -1,0 +1,26 @@
+@import '../../styles/mixin.scss';
+@import '../../styles/variables.scss';
+
+.tab_wrap {
+  @include justify-content('space-between');
+  @include flex-direction('row');
+  width: 100%;
+  height: 50px;
+  font-size: 14px;
+  color: $main-color;
+  // border: 1px solid #eeeeee;
+  border-radius: 3px;
+  .tab {
+    @include center_mid();
+    width: 100%;
+    color: $main-color;
+    cursor: pointer;
+  }
+  .selected_tab {
+    @include center_mid();
+    border-bottom: 2.5px solid $sub-color;
+    color: #282828;
+    font-weight: bold;
+    width: 100%;
+  }
+}
