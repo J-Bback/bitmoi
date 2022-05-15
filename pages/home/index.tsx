@@ -6,7 +6,7 @@ import Link from 'next/link';
 import BannerCard from './BannerCard';
 import useStores from '../../stores/UseStores';
 
-import { CallApi } from '../../utils/callApi';
+import CallApi from '../../utils/callApi';
 import { setCookie, getCookie } from '../../utils/cookie';
 import costComma from '../../helpers/costComma';
 import signPositiveNumber from '../../helpers/signPositiveNumber';

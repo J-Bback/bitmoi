@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import Image from 'next/image';
 import { UseWindowSize } from './hooks/UseWindowSize';
-import { CallApi } from '../../utils/callApi';
+import CallApi from '../../utils/callApi';
 import costComma from '../../helpers/costComma';
 import signPositiveNumber from '../../helpers/signPositiveNumber';
 import { coinNameKR } from '../../constants/NameParser';
@@ -49,6 +49,18 @@ type OrderBook = {
   asks: Array<BidAndAsk>;
 };
 
+type OrderBookHistory = {
+  order_id: number;
+  user_id: number;
+  coin_id: number;
+  price: number;
+  quantity: number;
+  types: string;
+  state: string;
+  order_at: Date;
+  update_at?: Date;
+};
+
 const Exchange = (props: any) => {
   const [series, setSeries] = useState<any>([]);
   const [barSeries, setBarSeries] = useState<Array<BarData>>([]);
@@ -63,6 +75,8 @@ const Exchange = (props: any) => {
   const [orderPrice, setOrderPrice] = useState<number>();
   const [orderTotalPrice, setOrderTotalPrice] = useState<string>('0');
   const [orderCount, setOrderCount] = useState<number>();
+  const [orderbookHistory, setOrderbookHistory] = useState<Array<OrderBookHistory>>([]);
+
   const router = useRouter();
   const { query } = router;
 
@@ -74,19 +88,21 @@ const Exchange = (props: any) => {
   useInterval(() => {
     getTicker();
   }, 1000);
-  // useInterval(() => {
-  //   getOrderBook();
-  // }, 30000);
-  // useEffect(() => {
-  //   async function fetchAndSetOrderPrice() {
-  //     const data = await getTicker();
-  //     const coinPrice = costComma(data[selectedCurrency]?.closing_price);
-  //     setOrderPrice(coinPrice);
-  //     setOrderCount('0');
-  //     setOrderTotalPrice('0');
-  //   }
-  //   fetchAndSetOrderPrice();
-  // }, [selectedCurrency]);
+  useInterval(() => {
+    getOrderBook();
+  }, 100000);
+  useEffect(() => {
+    async function fetchAndSetOrderPrice() {
+      const data = await getTicker();
+      // const coinPrice = costComma(data[selectedCurrency]?.closing_price);
+      const coinPrice = Number(data[selectedCurrency]?.closing_price);
+      setOrderPrice(coinPrice);
+      // setOrderCount('0');
+      setOrderCount(0);
+      setOrderTotalPrice('0');
+    }
+    fetchAndSetOrderPrice();
+  }, [selectedCurrency]);
 
   useEffect(() => {
     if (query.selectedCurrency) {
@@ -99,22 +115,8 @@ const Exchange = (props: any) => {
   }, [selectedCurrency]);
 
   // useEffect(() => {
-  //   setTimeout(() => {
-  //     getData();
-  //   }, 1000);
-  // }, [series]);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     getTicker();
-  //   }, 1000);
-  // }, [currencyList]);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     getOrderBook();
-  //   }, 1000);
-  // }, [orderbook]);
+  //   getOrderBookHistory();
+  // }, []);
 
   const intervalParser = (time: string) => {
     switch (time) {
@@ -205,7 +207,7 @@ const Exchange = (props: any) => {
     }
   };
 
-  const OrderBidOrAsk = async () => {
+  const orderBidOrAsk = async () => {
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
       const url = 'https://api.bitmoi.com/orders';
@@ -223,7 +225,8 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('OrderBidOrAsk responseJson.data', responseJson);
+        console.log('orderBidOrAsk responseJson.data', responseJson);
+        getOrderBookHistory();
       }
     } catch (error) {
       console.log(error);
@@ -251,7 +254,7 @@ const Exchange = (props: any) => {
     }
   };
 
-  const getUserOrderbook = async () => {
+  const getOrderBookHistory = async () => {
     try {
       const url = 'https://api.bitmoi.com/orderbook';
       const data = {
@@ -262,7 +265,7 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('getUserOrderbook responseJson.data', responseJson);
+        console.log('getOrderBookHistory responseJson.data', responseJson);
       }
     } catch (error) {
       console.log(error);
@@ -844,7 +847,7 @@ const Exchange = (props: any) => {
                 className={styles.order_button}
                 btnText={`${bidOrAsk}주문`}
                 inlineStyle={{ backgroundColor: bidOrAsk === '매수' ? '#F75467' : '#4386F9' }}
-                btnClick={() => OrderBidOrAsk()}
+                btnClick={() => orderBidOrAsk()}
               />
             </section>
           </div>

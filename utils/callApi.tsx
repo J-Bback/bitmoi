@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Cookies from 'universal-cookie';
 
 type DataProps = {
   method: string;
@@ -11,22 +12,24 @@ type DataProps = {
 type Options = {
   // mode: any;
   method: string;
-  header: any;
+  headers: any;
   body?: any;
   params?: any;
   disabledErrorHandler?: any;
 };
 
-export const CallApi = async (data: DataProps) => {
+const CallApi = async (data: DataProps) => {
   const options: Options = {
     // mode: 'no-cors',
     method: data.method,
-    header: {
+    headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     disabledErrorHandler: data.disabledErrorHandler ?? null,
   };
+  const cookies = new Cookies();
+  const jwt = await cookies.get('bitmoi-jwt');
 
   if (options.disabledErrorHandler === null) {
     delete options.disabledErrorHandler;
@@ -35,8 +38,17 @@ export const CallApi = async (data: DataProps) => {
   if (!!data.body && data.method === 'POST') {
     options.body = data.body.stringify();
   }
+
+  if (!!jwt) {
+    options.headers.Authorization = `JWT ${jwt}`;
+  }
+
+  // const response = await axios.get(data.url, { headers: { options.header}})
+
   const response = await fetch(data.url, options)
     .then((res) => res)
     .catch((e) => console.log(e));
   return response;
 };
+
+export default CallApi;
