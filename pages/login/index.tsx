@@ -30,13 +30,14 @@ const Login = () => {
   const loginFunction = async () => {
     const data = {
       disabledErrorHandler: true,
-      username: email,
+      email: email,
       password: password.current?.value.toString(),
     };
 
     try {
-      const response = await apiAuth.login(data);
-      console.log('login response', response);
+      const response: any = await apiAuth.login(data);
+      const responseJson: any = await response.json();
+      console.log('login response', responseJson);
       // if (response.status === 200) {
 
       // }

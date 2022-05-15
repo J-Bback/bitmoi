@@ -5,7 +5,11 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `API주소/:path*`,
+        destination: `https://api.bithumb.com/:path*`,
+      },
+      {
+        source: '/api/:path*',
+        destination: `http://52.78.124.218:9000/:path*`,
       },
     ];
   },

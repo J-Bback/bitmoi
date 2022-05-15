@@ -19,6 +19,8 @@ type Options = {
 };
 
 const CallApi = async (data: DataProps) => {
+  console.log('env', process.env);
+  console.log('axios defaults', axios.defaults);
   const options: Options = {
     // mode: 'no-cors',
     method: data.method,
@@ -28,20 +30,20 @@ const CallApi = async (data: DataProps) => {
     },
     disabledErrorHandler: data.disabledErrorHandler ?? null,
   };
-  const cookies = new Cookies();
-  const jwt = await cookies.get('bitmoi-jwt');
+  // const cookies = new Cookies();
+  // const jwt = await cookies.get('bitmoi-jwt');
 
   if (options.disabledErrorHandler === null) {
     delete options.disabledErrorHandler;
   }
 
   if (!!data.body && data.method === 'POST') {
-    options.body = data.body.stringify();
+    options.body = JSON.stringify(data.body);
   }
 
-  if (!!jwt) {
-    options.headers.Authorization = `JWT ${jwt}`;
-  }
+  // if (!!jwt) {
+  //   options.headers.Authorization = `JWT ${jwt}`;
+  // }
 
   // const response = await axios.get(data.url, { headers: { options.header}})
 

@@ -8,6 +8,7 @@ import apiAuth from '../api/auth';
 import Button from '../../atoms/Button';
 
 import styles from './Signup.module.scss';
+// import { getMaxListeners } from 'process';
 const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [idWarning, setIdWarning] = useState<boolean>(false);
@@ -32,7 +33,7 @@ const Login = () => {
 
   const validateEmail = async () => {
     const data = {
-      url: `https://api.bitmoi.com/users/join/check?${email}`,
+      url: `52.78.124.218:9000/user/check?${email}`,
       password: password.current?.value.toString(),
     };
 
@@ -50,12 +51,14 @@ const Login = () => {
   const signupFunction = async () => {
     const data = {
       disabledErrorHandler: true,
-      username: email,
-      password: password.current?.value.toString(),
+      email: 'acepark14@gmail.com',
+      password: '1q2w3e4r',
+      phone: '01058038777',
+      name: '박현재',
     };
-
+    console.log('ddddd', data);
     try {
-      const response = await apiAuth.login(data);
+      const response = await apiAuth.signup(data);
       console.log('login response', response);
       // if (response.status === 200) {
 

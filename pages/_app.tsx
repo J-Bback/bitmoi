@@ -20,7 +20,7 @@ async function login(serverCookie: any, callback: any) {
   }
 }
 
-MyApp.getInitialProps = async (appContext: any) => {
+MyApp.getStaticProps = async (appContext: any) => {
   const mobxStore = initializeStore();
   appContext.ctx.mobxStore = mobxStore;
   appContext.ctx.isServer = typeof window === 'undefined';

@@ -1,22 +1,19 @@
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { useRouter } from 'next/router';
 
 import Image from 'next/image';
-import { UseWindowSize } from './hooks/UseWindowSize';
 import CallApi from '../../utils/callApi';
 import costComma from '../../helpers/costComma';
 import signPositiveNumber from '../../helpers/signPositiveNumber';
 import { coinNameKR } from '../../constants/NameParser';
 import { setCookie, getCookie } from '../../utils/cookie';
-
-import ExchangeData from './ExchangeData';
 import { ApexChart } from '../../components/ApexChart';
 import Input from '../../atoms/Input';
 import Button from '../../atoms/Button';
 import Tab from '../../components/Tab';
 import Table from '../../components/Table';
-import { useInterval } from './hooks/UseInterval';
+import { useInterval } from '../../hooks/UseInterval';
 
 import styles from './Exchange.module.scss';
 
@@ -79,8 +76,6 @@ const Exchange = (props: any) => {
 
   const router = useRouter();
   const { query } = router;
-
-  // const size: Size = UseWindowSize();
 
   useInterval(() => {
     getData();
