@@ -51,7 +51,7 @@ const Nav = (props: Props) => {
   const goToLogin = () => {
     return router.push(
       {
-        pathname: '/asset/login',
+        pathname: '/login',
       },
       undefined,
       { shallow: true }
@@ -61,7 +61,7 @@ const Nav = (props: Props) => {
   const goToSignUp = () => {
     return router.push(
       {
-        pathname: '/asset/signup',
+        pathname: '/signup',
       },
       undefined,
       { shallow: true }

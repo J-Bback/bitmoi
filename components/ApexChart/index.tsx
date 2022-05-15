@@ -43,7 +43,6 @@ export const ApexChart = (props: ApexChartProps) => {
           height={160}
         />
       </div>
-      )
     </div>
   );
 };

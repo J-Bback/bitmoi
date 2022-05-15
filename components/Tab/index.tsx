@@ -13,6 +13,8 @@ interface PropsType {
     tabItems: Array<Item>;
     selectedTab: string | string[] | undefined;
   };
+  tabStyle?: React.CSSProperties;
+  selectedTabStyle?: React.CSSProperties;
 }
 
 const Tab = (props: PropsType) => {
@@ -25,6 +27,11 @@ const Tab = (props: PropsType) => {
           <div
             key={i}
             className={`${styles.tab} ${tab.key === tabs.selectedTab && styles.selected_tab}`}
+            style={
+              props.tabStyle && props.selectedTabStyle && tab.key === tabs.selectedTab
+                ? props.selectedTabStyle
+                : props.tabStyle
+            }
             onClick={() => tab.onClick()}>
             {tab.label}
           </div>

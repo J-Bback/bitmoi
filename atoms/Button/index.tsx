@@ -42,8 +42,7 @@ class Button extends Component<ComponentProps> {
         className={`${outline ? styles.outline : styles.btn_default} ${className || ''}`}
         onClick={loading ? () => undefined : this._handleClick}
         style={inlineStyle || {}}
-        id={id}
-      >
+        id={id}>
         {this.children()}
       </button>
     );

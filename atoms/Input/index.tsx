@@ -28,6 +28,7 @@ interface ComponentProps {
   parser?: any;
   unitInInputComponent?: boolean;
   unit?: string;
+  image?: boolean;
 }
 
 // const CLOSE_IMG = require('close_button.png');
@@ -105,6 +106,7 @@ class Input extends Component<ComponentProps, { clearBtn: boolean }> {
       pattern,
       maxLength,
       clearButton,
+      image,
     } = this.props;
     return (
       <div className={styles.input_container}>
@@ -128,18 +130,20 @@ class Input extends Component<ComponentProps, { clearBtn: boolean }> {
           ref={inputRef || null}
         />
         <div className={styles.search_button}>
-          <Image src="/images/search-button.png" alt="Search Button" width={16} height={16} />
+          {this.props.image && <Image src="/images/search-button.png" alt="Search Button" width={16} height={16} />}
         </div>
 
         {clearButton === 'on' && this.valueParser() && (
           <div className={this.inputClearButtonStyle(placeholder || '')}>
-            <Image
-              src="/images/close-button.png"
-              alt="Close Button"
-              width={16}
-              height={16}
-              onClick={() => this.inputValueClear()}
-            />
+            {this.props.image && (
+              <Image
+                src="/images/close-button.png"
+                alt="Close Button"
+                width={16}
+                height={16}
+                onClick={() => this.inputValueClear()}
+              />
+            )}
           </div>
         )}
       </div>

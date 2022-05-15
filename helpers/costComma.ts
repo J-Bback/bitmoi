@@ -10,7 +10,7 @@ export default function costComma(strParams: string | number) {
   if (str.length === 0) {
     return '-';
   }
-  return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+  return str.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export const comma = costComma;

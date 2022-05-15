@@ -5,6 +5,7 @@ type DataProps = {
   method: string;
   url: string;
   body?: any;
+  disabledErrorHandler?: any;
 };
 
 type Options = {
@@ -13,6 +14,7 @@ type Options = {
   header: any;
   body?: any;
   params?: any;
+  disabledErrorHandler?: any;
 };
 
 export const CallApi = async (data: DataProps) => {
@@ -23,12 +25,16 @@ export const CallApi = async (data: DataProps) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
+    disabledErrorHandler: data.disabledErrorHandler ?? null,
   };
+
+  if (options.disabledErrorHandler === null) {
+    delete options.disabledErrorHandler;
+  }
 
   if (!!data.body && data.method === 'POST') {
     options.body = data.body.stringify();
   }
-  // `https://exp.host/${data.url}/api/v2/push/send`
   const response = await fetch(data.url, options)
     .then((res) => res)
     .catch((e) => console.log(e));

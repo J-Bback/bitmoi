@@ -10,6 +10,7 @@ import { UAParser } from 'ua-parser-js';
 import initializeStore from '../stores';
 import Nav from '../components/Nav';
 import '../styles/globals.css';
+import '../styles/slider.css';
 
 async function login(serverCookie: any, callback: any) {
   const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();

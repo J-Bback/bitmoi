@@ -17,6 +17,7 @@ import Input from '../../atoms/Input';
 import Nav from '../../components/Nav';
 import Tab from '../../components/Tab';
 import Table from '../../components/Table';
+import Slider from '../../components/Slider/Slider';
 
 import styles from './Home.module.scss';
 
@@ -69,8 +70,8 @@ const Home = (props: any) => {
   };
 
   const getDayToDayFluctate = (name: string, type: string) => {
-    const yesterdayPrice = Number(currencyList[name].prev_closing_price);
-    const currentPrice = Number(currencyList[name].closing_price);
+    const yesterdayPrice = Number(currencyList[name]?.prev_closing_price);
+    const currentPrice = Number(currencyList[name]?.closing_price);
     const fluctatePrice = Math.round((currentPrice - yesterdayPrice) * 100) / 100;
     const fluctateRate = Math.round((fluctatePrice / yesterdayPrice) * 10000) / 100;
     if (type === 'krw') {
@@ -121,14 +122,46 @@ const Home = (props: any) => {
     return (
       <header className={styles.header_wrap}>
         <div className={styles.banner_wrap}>
-          {bannerList.map((item: BannerList, i: number) => {
+          {/* {bannerList.map((item: BannerList, i: number) => {
             return (
               <div key={i} className={styles.banner_box} onClick={() => window.open(item.url, '_blank')}>
                 <Image src={item.src} alt="BannerImage" width={278} height={144} />
               </div>
             );
-          })}
+          })} */}
+          <Slider />
         </div>
+        {/* <div className={styles.introduce_wrap}> */}
+        <div className={styles.hs_introduce_wrap}>
+          {/* <div className={styles.introduce_title}>암호화폐 모의투자</div> */}
+          <div style={{ padding: 40 }}>
+            <div>
+              <h2>암호화폐 모의투자</h2>
+            </div>
+            <div className={styles.introduce_description} style={{ color: '#979797' }}>
+              BITMOI에서 실전처럼 암호화폐 투자를 체험해보세요! <br />
+              참가자들의 수익률 현황은 랭킹에서 확인하실 수 있습니다!
+            </div>
+            <div className={styles.introduce_button_wrap}>
+              <div className={styles.button_wrap} onClick={() => moveToExchange('BTC')}>
+                모의투자
+              </div>
+              <div className={styles.button_wrap} onClick={() => moveToRanking()}>
+                랭킹
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="bg-img"
+            style={{
+              width: 500,
+              borderTopRightRadius: 16,
+              borderBottomRightRadius: 16,
+              backgroundImage: `url("https://images.unsplash.com/photo-1604594849809-dfedbc827105?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80")`,
+            }}></div>
+        </div>
+        {/* </div>
         <div className={styles.introduce_wrap}>
           <div className={styles.introduce_title}>암호화폐 모의투자</div>
           <div className={styles.introduce_description}>
@@ -143,7 +176,7 @@ const Home = (props: any) => {
               랭킹
             </div>
           </div>
-        </div>
+        </div> */}
       </header>
     );
   };
@@ -164,8 +197,8 @@ const Home = (props: any) => {
       setTotalPage(Math.ceil(keys.length / 30));
     }
     return keys.map((name: string, i: number) => {
-      const currentPrice = currencyList[name].closing_price;
-      const accTradeValue = currencyList[name].acc_trade_value_24H;
+      const currentPrice = currencyList[name]?.closing_price;
+      const accTradeValue = currencyList[name]?.acc_trade_value_24H;
       const dayToDayFluctate = getDayToDayFluctate(name, 'krw');
       const dayToDayFluctateRate = getDayToDayFluctate(name, 'rate');
       const nameKR: string = coinNameKR[name];
@@ -233,6 +266,7 @@ const Home = (props: any) => {
             contentsStyle={{ width: '260px', fontSize: '20px' }}
           />
           <Input
+            image={true}
             type="text"
             placeholder="검색"
             className={styles.input_style}
