@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import Link from 'next/link';
-
-import BannerCard from './BannerCard';
 import useStores from '../../stores/UseStores';
 
 import CallApi from '../../utils/callApi';
