@@ -2,7 +2,7 @@
   "name": "bitmoi",
   "version": "0.1.0",
   "private": true,
-  "proxy": "localhost:3000",
+  "proxy": "http://localhost:3000",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
