@@ -1,0 +1,9 @@
+@import '../../styles/mixin.scss';
+@import '../../styles/variables.scss';
+
+.container {
+  @include center_mid();
+  text-align: center;
+  width: 100vw;
+  height: 100vh;
+}

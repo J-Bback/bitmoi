@@ -1,0 +1,52 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixin.scss";
+$common-border: 1px solid $gray-2;
+.btn_default {
+  border: none;
+  border-radius: 3px;
+  background: $gray-2;
+  color: white;
+  font-size: 13px;
+  padding: 5px 10px;
+  height: 27px;
+  line-height: initial;
+  &:disabled {
+    background: $gray-4;
+    cursor: initial;
+  }
+}
+.outline {
+  border: $common-border;
+  border-radius: 3px;
+  padding: 5px;
+  font-size: 14px;
+  color: $gray-2;
+  background: $gray-6;
+}
+
+.loading_wrap {
+  @include center_mid();
+  width: 100%;
+  .loading {
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    // position: relative;
+    // top: calc(50% - 50px);
+    // left: 50%;
+    width: 15px;
+    height: auto;
+    animation: spinner infinite 1s forwards;
+
+    @keyframes spinner {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  }
+}

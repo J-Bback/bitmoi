@@ -1,0 +1,115 @@
+@import '../../styles/mixin.scss';
+@import '../../styles/variables.scss';
+
+.container {
+  @include justify-content(center);
+  @include align-items(center);
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  background-color: $main-color;
+  color: $white;
+  margin-top: 60px;
+  .login_wrap {
+    max-width: 350px;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    padding: 20px;
+    .title {
+      text-align: center;
+      padding: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      color: $white;
+    }
+    .email_text {
+      text-align: left;
+      font-size: 13px;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+    .password_text {
+      text-align: left;
+      font-size: 13px;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+    .email_wrap {
+      @include center_mid();
+      @include align-items(center);
+    }
+    .input {
+      min-width: 200px;
+      width: 100%;
+      height: 42px;
+      border: 1px solid $white;
+      border-radius: 5px;
+      color: $main-color;
+      background-color: #eeeeee;
+      font-size: 16px;
+      padding-left: 5px;
+      outline: none;
+    }
+    .email_input {
+      min-width: 200px;
+      width: 100%;
+      height: 42px;
+      border: 1px solid $white;
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
+      color: $main-color;
+      background-color: #eeeeee;
+      font-size: 16px;
+      padding-left: 5px;
+      outline: none;
+    }
+    .validate_button {
+      min-width: 80px;
+      height: 42px;
+      background-color: #eeeeee;
+      color: $main-color;
+      border-top: 1px solid #eeeeee;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      font-size: 15px;
+    }
+    .warning {
+      font-size: 12px;
+      color: red;
+      margin-top: 10px;
+      max-width: 230px;
+      height: 20px;
+      word-break: keep-all;    
+    }
+    .nickname {
+      padding: 0;
+      margin-bottom: 5px;
+      font-size: 13px;
+      text-align: left;
+    }
+    .nickname_description {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .login_button {
+      @include center_mid();
+      width: 100%;
+      height: 52px;
+      margin-top: 10px;
+      border: 1px solid $brand-color;
+      border-radius: 30px;
+      color: $brand-color;
+      background-color: $main-color;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .signup_button {
+      @include justify-content(space-evenly);
+      margin: 10px 20px 0 20px;
+      font-size: 15px;
+      padding: 10px;
+      .signup {
+        cursor: pointer;
+      }
+    }
+  }
+}

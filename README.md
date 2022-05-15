@@ -1,34 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## BITMOI
+암호화폐 모의투자
 
-## Getting Started
+#### 1. 완성된 GIF 파일 및 배포 링크
+[와이어프레임](https://www.figma.com/proto/7usxJCuyjYt1Dv8Cd6mC5D/%EB%B9%84%ED%8A%B8%EC%BD%94%EC%9D%B8-%EB%AA%A8%EC%9D%98%ED%88%AC%EC%9E%90?node-id=10%3A145&scaling=min-zoom&page-id=10%3A144)
 
-First, run the development server:
+배포 대기중
 
-```bash
-npm run dev
-# or
-yarn dev
+#### 2. 프로젝트 실행 방법
+node v16.13.2
+npm v8.1.2
+```
+yarn install
+yarn run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### 3. 사용한 스택 목록
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- React, React-hooks, HTML, SCSS
+- Next.js, TypeScript
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+#### 4. 구현한 기능 목록 (Software Requirement Specification)
+***Atomic Design Pattern 적용***
+- 
+***세부적인 기능***
+<!-- - 즐겨찾기 기능(홈, 거래소 페이지 간 공유)
+- 다양한 차트 라이브러리를 이용하여 구현
+- 암호화폐의 한글이름 및 심볼 검색기능
+- 거래소 뷰 > 원화마켓의 암호화폐 클릭 시 차트 및 화면 전환 -->
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+#### 5. 구현 방법 및 구현하면서 어려웠던 점
+#### 나를 힘들게 만든 스택
 
-## Learn More
+#### 6. 성능 최적화에 대해서 고민하고 개선한 방법 (UX)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+#### 7. UI 개선
