@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  async rewirtes() {
+  async rewrites() {
     return [
       {
         source: '/api/:path*',

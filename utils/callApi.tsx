@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
+import JsonWebToken from 'jsonwebtoken';
+import { config } from 'process';
 
 type DataProps = {
   method: string;
@@ -19,10 +21,9 @@ type Options = {
 };
 
 const CallApi = async (data: DataProps) => {
-  console.log('env', process.env);
-  console.log('axios defaults', axios.defaults);
+  const cookies = new Cookies();
+  const jwt = await cookies.get('bitmoi-jwt');
   const options: Options = {
-    // mode: 'no-cors',
     method: data.method,
     headers: {
       'Content-Type': 'application/json',
@@ -30,9 +31,6 @@ const CallApi = async (data: DataProps) => {
     },
     disabledErrorHandler: data.disabledErrorHandler ?? null,
   };
-  // const cookies = new Cookies();
-  // const jwt = await cookies.get('bitmoi-jwt');
-
   if (options.disabledErrorHandler === null) {
     delete options.disabledErrorHandler;
   }
@@ -41,10 +39,11 @@ const CallApi = async (data: DataProps) => {
     options.body = JSON.stringify(data.body);
   }
 
-  // if (!!jwt) {
-  //   options.headers.Authorization = `JWT ${jwt}`;
-  // }
-
+  if (!data.url.includes('bithumb')) {
+    if (!!jwt) {
+      options.headers.Authorization = `${jwt}`;
+    }
+  }
   // const response = await axios.get(data.url, { headers: { options.header}})
 
   const response = await fetch(data.url, options)

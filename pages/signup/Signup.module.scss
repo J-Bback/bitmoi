@@ -77,7 +77,7 @@
       color: red;
       margin-top: 10px;
       max-width: 230px;
-      height: 20px;
+      max-height: 20px;
       word-break: keep-all;    
     }
     .nickname {
@@ -90,6 +90,13 @@
       font-size: 12px;
       margin-top: 5px;
     }
+    .phone_text {
+      text-align: left;
+      font-size: 13px;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
     .login_button {
       @include center_mid();
       width: 100%;

@@ -14,7 +14,7 @@ import '../styles/slider.css';
 
 async function login(serverCookie: any, callback: any) {
   const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
-  const jwt = cookies.get(`${process.env.API_ENV}`);
+  const jwt = cookies.get(`bitmoi-jwt`);
   if (jwt && callback) {
     await callback(jwt);
   }
