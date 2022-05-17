@@ -5,7 +5,7 @@ const nextConfig = {
     loader: 'akamai',
     path: '/',
   },
-  async rewirtes() {
+  async rewrites() {
     return [
       {
         source: '/api/:path*',

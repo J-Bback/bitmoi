@@ -9,10 +9,11 @@ export default {
       body: params,
     });
   },
-  validateEmail(params: any) {
+  checkEmail(params: any) {
     return CallApi({
-      url: params.url,
-      method: 'GET',
+      url: `${params.url}`,
+      method: 'POST',
+      body: params.body,
     });
   },
   signup(params: any) {
@@ -20,7 +21,7 @@ export default {
       // disabledErrorHandler: params.disabledErrorHandler,
       url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/join',
       method: 'POST',
-      body: params,
+      body: params.body,
     });
   },
 };

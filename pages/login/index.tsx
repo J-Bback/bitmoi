@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/router';
-import JsonWebToken from 'jsonwebtoken';
-// import sha256 from 'crypto-js/sha256';
+import jwt from 'jsonwebtoken';
 import { setCookie, getCookie } from '../../utils/cookie';
 import apiAuth from '../api/auth';
+import apiLogin from '../api/login';
 
 import Button from '../../atoms/Button';
 
@@ -27,20 +27,44 @@ const Login = () => {
     return;
   };
 
+  const goHome = () => {
+    router.push(
+      {
+        pathname: '/home',
+        query: { tab: 'krw' },
+      },
+      undefined,
+      { shallow: true }
+    );
+    return;
+  };
+
   const loginFunction = async () => {
     const data = {
-      disabledErrorHandler: true,
-      email: email,
-      password: password.current?.value.toString(),
+      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/login',
+      body: {
+        email: email,
+        password: password.current?.value.toString(),
+      },
     };
 
     try {
-      const response: any = await apiAuth.login(data);
-      const responseJson: any = await response.json();
-      console.log('login response', responseJson);
-      // if (response.status === 200) {
-
-      // }
+      const response: any = await apiLogin(data);
+      // const responseJson: any = await response.json();
+      const responseData: any = response?.data;
+      if (response.status === 200) {
+        if (responseData?.accessToken === '존재하지 않은 회원입니다.') {
+          return alert('이메일 또는 비밀번호가 맞지 않습니다.');
+        }
+        if (!!responseData?.accessToken) {
+          setCookie('bitmoi-jwt', responseData.accessToken, {
+            path: '/',
+            secure: true,
+            sameSite: 'none',
+          });
+          goHome();
+        }
+      }
     } catch (error) {
       console.log(error);
     }

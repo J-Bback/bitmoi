@@ -42,7 +42,7 @@ const Home = (props: any) => {
 
       const data = {
         method: 'GET',
-        url: `https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
+        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);

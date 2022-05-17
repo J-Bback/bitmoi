@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+import JsonWebToken from 'jsonwebtoken';
 import { setCookie, getCookie } from '../../utils/cookie';
 import { coinNameKR } from '../../constants/NameParser';
 
 import Table from '../../components/Table';
 
 import styles from './Asset.module.scss';
+import CallApi from '../../utils/callApi';
 
 type Props = {};
 
@@ -14,16 +16,58 @@ export default function Asset({}: Props) {
   const [assetList, setAssetList] = useState();
 
   const router = useRouter();
+  const cookie = getCookie('bitmoi-jwt');
 
   useEffect(() => {
     // 로그인 상태가 아니면 로그인 화면
-    const cookie = getCookie('favoriteCoins');
     if (!cookie) {
       router.push({
         pathname: '/login',
       });
+    } else {
+      getWallet();
+      getOrderBookHistory();
     }
   }, []);
+
+  const getWallet = async () => {
+    const data = {
+      disabledErrorHandler: true,
+      method: 'GET',
+      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/wallet',
+    };
+
+    try {
+      const response: any = await CallApi(data);
+      const responseJson: any = await response.json();
+      // console.log('wallet 조회 성공', response);
+      if (response?.status === 200) {
+        console.log('getWallet response', response);
+        console.log('getWallet responseJson', responseJson);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getOrderBookHistory = async () => {
+    try {
+      const url = 'https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/orderbook';
+      const data = {
+        method: 'GET',
+        url: url,
+      };
+
+      const response: any = await CallApi(data);
+      const responseJson: any = await response.json();
+      if (response.status === 200) {
+        console.log('getOrderBookHistory response', response);
+        console.log('getOrderBookHistory responseJson', responseJson);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const orderTbodyData = () => {
     const temp = ['a', 'a', 'a', 'a', 'a', 'a'];
@@ -120,4 +164,7 @@ export default function Asset({}: Props) {
       </div>
     </div>
   );
+  // ) : (
+  //   <div className={styles.asset_container} />
+  // );
 }
