@@ -100,8 +100,8 @@ const Exchange = (props: any) => {
   }, [selectedCurrency]);
 
   useEffect(() => {
-    if (query.selectedCurrency) {
-      const selectedCoin: string = String(query.selectedCurrency);
+    if (query?.selectedCurrency) {
+      const selectedCoin: string = String(query?.selectedCurrency);
       getOrderBook(selectedCoin);
       setSelectedCurrency(selectedCoin);
     } else {
