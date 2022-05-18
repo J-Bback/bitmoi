@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { setCookie, getCookie } from '../../utils/cookie';
 import apiAuth from '../api/auth';
 import apiLogin from '../api/login';
+import AuthStore from '../../stores/AuthStore';
 
 import Button from '../../atoms/Button';
 
@@ -15,6 +16,7 @@ const Login = () => {
   const [passwordWarning, setPasswordWarning] = useState<boolean>(false);
   const [passwordWarningMessage, setPasswordWarningMessage] = useState<string>('');
 
+  const store = new AuthStore();
   const router = useRouter();
   const password = useRef<any>();
 
@@ -57,11 +59,12 @@ const Login = () => {
           return alert('이메일 또는 비밀번호가 맞지 않습니다.');
         }
         if (!!responseData?.accessToken) {
-          setCookie('bitmoi-jwt', responseData.accessToken, {
-            path: '/',
-            secure: true,
-            sameSite: 'none',
-          });
+          store.login(responseData.accessToken);
+          // setCookie('token', responseData.accessToken, {
+          //   path: '/',
+          //   secure: true,
+          //   sameSite: 'none',
+          // });
           goHome();
         }
       }
@@ -102,6 +105,7 @@ const Login = () => {
 
   const resetPassword = () => {
     // 모달띄우기
+    return alert('점검중입니다. acepark14@gmail.com 으로 문의 부탁드립니다.');
   };
 
   return (

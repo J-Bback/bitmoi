@@ -14,41 +14,46 @@ import '../styles/slider.css';
 
 async function login(serverCookie: any, callback: any) {
   const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
-  const jwt = cookies.get(`bitmoi-jwt`);
+  const jwt = cookies.get('token');
   if (jwt && callback) {
     await callback(jwt);
   }
 }
 
-MyApp.getStaticProps = async (appContext: any) => {
-  const mobxStore = initializeStore();
-  appContext.ctx.mobxStore = mobxStore;
-  appContext.ctx.isServer = typeof window === 'undefined';
-  if (appContext.ctx.req && appContext.ctx.req.headers) {
-    const uaParser = new UAParser(appContext.ctx.req.headers['user-agent']);
+// MyApp.getinitialProps = async (ctx: any) => {
+//   const mobxStore = initializeStore();
+//   ctx.mobxStore = mobxStore;
+//   ctx.isServer = typeof window === 'undefined';
+//   if (ctx.req && ctx.req.headers) {
+//     const uaParser = new UAParser(ctx.req.headers['user-agent']);
 
-    if (uaParser.getBrowser().name === 'IE' && appContext.ctx.req.url !== '/notSupportedExploler') {
-      appContext.ctx.res.writeHead(302, { Location: '/notSupportedExploler' });
-      appContext.ctx.res.end();
-      return;
-    }
+//     if (uaParser.getBrowser().name === 'IE' && ctx.req.url !== '/notSupportedExploler') {
+//       ctx.res.writeHead(302, { Location: '/notSupportedExploler' });
+//       ctx.res.end();
+//       return;
+//     }
 
-    if (appContext.ctx.isServer) {
-      console.log('쿠키 요청 헤더', appContext.ctx.req.headers);
-      console.log('인증 스토어 로그인', appContext.ctx.mobxStore.authStore.login);
-      await login(appContext.ctx.req.headers.cookie, appContext.ctx.mobxStore.authStore.login); // authStore.login
-    }
-  }
-  const appProps = await App.getInitialProps(appContext);
-  return {
-    ...appProps,
-    initialMobxState: mobxStore,
-  };
-};
+//     if (ctx.isServer) {
+//       await login(ctx.req.headers.cookie, ctx.mobxStore.authStore.login); // authStore.login
+//     }
+//   }
+//   const appProps = await App.getInitialProps(ctx);
+//   return {
+//     ...appProps,
+//     initialMobxState: mobxStore,
+//   };
+// };
 
 function MyApp({ Component, pageProps }: any) {
+  const isServer = typeof window === 'undefined';
+  const store = initializeStore();
+  const { authStore } = store;
+  // if (isServer) {
+  login(null, authStore.login);
+  // }
+
   return (
-    <Provider>
+    <Provider {...store}>
       <Head>
         <title>암호화폐 모의투자</title>
         <meta
@@ -58,7 +63,7 @@ function MyApp({ Component, pageProps }: any) {
         />
         <link rel="icon" href="/candlestick.png" />
       </Head>
-      <Nav {...pageProps} />
+      <Nav />
       <Component {...pageProps} />
     </Provider>
   );

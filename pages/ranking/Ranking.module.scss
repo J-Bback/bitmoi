@@ -1,2 +1,52 @@
 @import '../../styles/mixin.scss';
 @import '../../styles/variables.scss';
+
+.container {
+  width: 1200px;
+  margin:0 auto;
+  padding-top:80px;
+
+  .ranking_wrap {
+    @include justify-content(space-between);
+    @include align-items(center);
+  }
+  .ranking {
+      flex:1;
+      width:300px;
+      height:200px;
+      box-shadow: 0px 8px 32px rgba(28, 30, 33, 0.08);
+      border-radius: 16px;
+      background-color: #fff;
+      display: inline-block;
+      // margin-right:20px;
+      // padding:20px;
+  }
+  .rank {
+      flex:1.2;
+      width:400px;
+      height:250px;
+      box-shadow: 0px 8px 32px rgba(28, 30, 33, 0.08);
+      padding:20px;
+      border-radius: 16px;
+      background-color: #fff;
+      display: inline-block;
+      margin: 0px 20px 20px 20px;
+  }
+}
+
+.font_title {
+  color: $brand-color;
+  margin-top:30px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.modal_button {
+  @include center_mid();
+  width: 50px;
+  height: 20px;
+  border: 1px solid $main-color;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
