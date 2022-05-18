@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import dayjs from 'dayjs';
+import * as isLeapYear from 'dayjs/plugin/isLeapYear';
+import 'dayjs/locale/zh-cn';
 
-import JsonWebToken from 'jsonwebtoken';
-import { setCookie, getCookie } from '../../utils/cookie';
+import { getCookie } from '../../utils/cookie';
 import { coinNameKR } from '../../constants/NameParser';
 
 import Table from '../../components/Table';
@@ -12,11 +14,55 @@ import CallApi from '../../utils/callApi';
 
 type Props = {};
 
+type OrderBookHistory = {
+  coinid: number;
+  createdat: number[];
+  orderbookid: number;
+  price: number;
+  quantity: number;
+  state: string;
+  types: string;
+  updatedat: number[];
+  userid: number;
+};
+
+type Wallet = {
+  appraisalAmount: number;
+  holdings: number;
+  krw: number;
+  purchaseAmount: number;
+  valuationPL: number;
+  yield: number;
+};
+
+const initialWallet = {
+  appraisalAmount: 0,
+  holdings: 0,
+  krw: 0,
+  purchaseAmount: 0,
+  valuationPL: 0,
+  yield: 0,
+};
+
+const coinList = [
+  '비트코인',
+  '이더리움',
+  '라이트코인',
+  '이더리움클래식',
+  '리플',
+  '비트코인캐시',
+  '퀀텀',
+  '비트코인골드',
+  '이오스',
+  '아이콘',
+];
+
 export default function Asset({}: Props) {
-  const [assetList, setAssetList] = useState();
+  const [orderbookHistory, setOrderbookHistory] = useState<Array<OrderBookHistory>>([]);
+  const [wallet, setWallet] = useState<Wallet>(initialWallet);
 
   const router = useRouter();
-  const cookie = getCookie('bitmoi-jwt');
+  const cookie = getCookie('token');
 
   useEffect(() => {
     // 로그인 상태가 아니면 로그인 화면
@@ -39,11 +85,9 @@ export default function Asset({}: Props) {
 
     try {
       const response: any = await CallApi(data);
-      const responseJson: any = await response.json();
-      // console.log('wallet 조회 성공', response);
+      const responseJson: Wallet = await response.json();
       if (response?.status === 200) {
-        console.log('getWallet response', response);
-        console.log('getWallet responseJson', responseJson);
+        setWallet(responseJson);
       }
     } catch (error) {
       console.log(error);
@@ -59,10 +103,9 @@ export default function Asset({}: Props) {
       };
 
       const response: any = await CallApi(data);
-      const responseJson: any = await response.json();
+      const responseJson: Array<OrderBookHistory> = await response.json();
       if (response.status === 200) {
-        console.log('getOrderBookHistory response', response);
-        console.log('getOrderBookHistory responseJson', responseJson);
+        setOrderbookHistory(responseJson);
       }
     } catch (error) {
       console.log(error);
@@ -70,9 +113,7 @@ export default function Asset({}: Props) {
   };
 
   const orderTbodyData = () => {
-    const temp = ['a', 'a', 'a', 'a', 'a', 'a'];
-
-    return temp?.map((item: any, i: number) => {
+    return orderbookHistory?.map((item: OrderBookHistory, i: number) => {
       return (
         <tr
           key={i}
@@ -82,13 +123,23 @@ export default function Asset({}: Props) {
             alignItems: 'center',
             backgroundColor: '#ffffff',
           }}>
-          <td style={{ width: 200 }}>{coinNameKR['BTC']}</td>
-          <td style={{ color: assetList ? '#D13C4B' : '#1F5ED2', width: 100 }}>{'매도'}</td>
-          <td style={{ width: 100 }}>대기</td>
-          <td style={{ width: 150 }}>22.7894000</td>
-          <td style={{ width: 150 }}>1,000,000</td>
-          <td style={{ width: 150 }}>{(1000000 * 22.7894).toLocaleString()}</td>
-          <td style={{ width: 150 }}>05-15 03:22</td>
+          <td style={{ width: 200 }}>{coinList[item.coinid - 1]}</td>
+          <td
+            style={{
+              color: item.types === 'bid' ? '#D13C4B' : item.types === 'ask' ? '#1F5ED2' : '#000000',
+              width: 100,
+            }}>
+            {item.types === 'bid' ? '매수' : item.types === 'ask' ? '매도' : '거절'}
+          </td>
+          <td style={{ width: 100 }}>{item.state === 'wait' ? '대기' : item.state === 'cancel' ? '취소' : '체결'}</td>
+          <td style={{ width: 150 }}>{`${item.quantity.toLocaleString()}`}</td>
+          <td style={{ width: 150 }}>{`${item.price.toLocaleString()} KRW`}</td>
+          <td style={{ width: 150 }}>{`${(item.quantity * item.price).toLocaleString()} KRW`}</td>
+          <td style={{ width: 150 }}>
+            {dayjs(
+              `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
+            ).format('YYYY-MM-DD HH:mm')}
+          </td>
         </tr>
       );
     });
@@ -107,31 +158,31 @@ export default function Asset({}: Props) {
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>보유 KRW</div>
-                <div className={styles.asset_bold_text}>15,000,000 KRW</div>
+                <div className={styles.asset_bold_text}>{`${wallet?.krw.toLocaleString()} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 보유자산</div>
-                <div className={styles.asset_bold_text}>30,000,000 KRW</div>
+                <div className={styles.asset_bold_text}>{`${wallet?.holdings.toLocaleString()} KRW`}</div>
               </div>
             </div>
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 매수금액</div>
-                <div>15,000,000 KRW</div>
+                <div>{`${wallet?.purchaseAmount.toLocaleString()} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가금액</div>
-                <div>30,000,000 KRW</div>
+                <div>{`${wallet?.appraisalAmount.toLocaleString()} KRW`}</div>
               </div>
             </div>
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가손익</div>
-                <div>-15,000,000 KRW</div>
+                <div>{`${wallet?.valuationPL.toLocaleString()} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가수익률</div>
-                <div>-16.67 %</div>
+                <div>{`${Math.round(wallet?.yield * 100)} %`}</div>
               </div>
             </div>
           </div>
@@ -153,18 +204,15 @@ export default function Asset({}: Props) {
           }}
           tableStyle={{
             width: '1200px',
-            maxHeight: 'calc(100vh - 480px)',
+            // maxHeight: 'calc(100vh - 480px)',
             justifyItems: 'center',
             backgroundColor: '#ffffff',
             border: '1px solid #eeeeee',
             borderRadius: '3px',
           }}
-          tbodyStyle={{ height: 'calc(100vh - 420px)', overflowY: 'auto' }}
+          tbodyStyle={{ minHeight: 'calc(100vh - 420px)', overflowY: 'auto' }}
         />
       </div>
     </div>
   );
-  // ) : (
-  //   <div className={styles.asset_container} />
-  // );
 }

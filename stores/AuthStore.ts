@@ -4,12 +4,19 @@ import JsonWebToken from 'jsonwebtoken';
 
 const cookies = new Cookies();
 
+type DecodedToken = {
+  exp: number;
+  id: string;
+  name: string;
+  userId: number;
+};
 class AuthStore {
   jwt = null;
   userId = null;
-  name = null;
-  phone = null;
+  name = '';
+  // phone = null;
   logged = false;
+  email = '';
 
   constructor() {
     makeAutoObservable(this);
@@ -25,11 +32,11 @@ class AuthStore {
       path: '/',
       secure: true,
     });
-    const decodedToken = JsonWebToken.decode(jwt);
-    console.log('decodedToken', decodedToken);
+    const decodedToken: any = JsonWebToken.decode(jwt);
     this.jwt = jwt;
-    // this.userId = decodedToken.userId;
-    // this.name = decodedToken.name;
+    this.userId = decodedToken.userId;
+    this.name = decodedToken.name;
+    this.email = decodedToken?.id;
     // this.phone = decodedToken.phone;
     this.logged = true;
   };

@@ -22,7 +22,7 @@ type Options = {
 
 const CallApi = async (data: DataProps) => {
   const cookies = new Cookies();
-  const jwt = await cookies.get('bitmoi-jwt');
+  const jwt = await cookies.get('token');
   const options: Options = {
     method: data.method,
     headers: {

@@ -1,7 +1,9 @@
+import React, { useState, Fragment, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import React, { useState, Fragment } from 'react';
 import Image from 'next/image';
 import Button from '../../atoms/Button';
+import initializeStore from '../../stores';
+import { removeCookie } from '../../utils/cookie';
 
 import styles from './Nav.module.scss';
 
@@ -10,8 +12,12 @@ interface Props {
   default?: string;
 }
 
-const Nav = (props: Props) => {
+const Nav = (props: any) => {
   const router = useRouter();
+  const store = initializeStore();
+  const { authStore } = store;
+
+  const [isUser, setIsUser] = useState<boolean>(false);
   const items = [
     { key: 'exchange', label: '거래소' },
     { key: 'ranking', label: '랭킹' },
@@ -19,6 +25,14 @@ const Nav = (props: Props) => {
     { key: 'subscription', label: '구독' },
     { key: 'community', label: '커뮤니티' },
   ];
+
+  useEffect(() => {
+    if (authStore.jwt && authStore.logged === true) {
+      setIsUser(true);
+    } else {
+      setIsUser(false);
+    }
+  }, [router.pathname]);
 
   const selectItem = (key: string) => {
     if (!router.pathname.includes(key)) {
@@ -52,6 +66,20 @@ const Nav = (props: Props) => {
     return router.push(
       {
         pathname: '/login',
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const goToLogout = () => {
+    removeCookie('token');
+    alert('로그아웃 되었습니다.');
+    window.location.reload();
+    return router.push(
+      {
+        pathname: '/home',
+        query: { tab: 'krw' },
       },
       undefined,
       { shallow: true }
@@ -94,10 +122,21 @@ const Nav = (props: Props) => {
   const renderButtons = () => {
     return (
       <div className={styles.button_wrap}>
-        <div className={styles.login_btn} onClick={() => goToLogin()}>
-          {'로그인'}
-        </div>
-        <Button btnText="회원가입" className={styles.signup_btn} btnClick={() => goToSignUp()} />
+        {isUser ? (
+          <div className={styles.logout_wrap}>
+            <div className={styles.username}>{`${authStore.name} 님`}</div>
+            <div className={styles.login_btn} onClick={() => goToLogout()}>
+              {`로그아웃`}
+            </div>
+          </div>
+        ) : (
+          <Fragment>
+            <div className={styles.login_btn} onClick={() => goToLogin()}>
+              {'로그인'}
+            </div>
+            <Button btnText="회원가입" className={styles.signup_btn} btnClick={() => goToSignUp()} />
+          </Fragment>
+        )}
       </div>
     );
   };

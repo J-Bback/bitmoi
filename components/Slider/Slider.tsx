@@ -35,7 +35,7 @@ export const Slider = () => {
   const items = [
     'https://images.unsplash.com/photo-1648737966900-730a5b2d673e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2344&q=80',
     'https://images.unsplash.com/photo-1652361561624-09537e993eb4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2334&q=80',
-    'https://images.unsplash.com/photo-1638913660106-73b4bac0db09?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2344&q=80',
+    'https://images.unsplash.com/photo-1615992174118-9b8e9be025e7?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340',
   ];
   const itemSize = items.length;
   const sliderPadding = 40;
@@ -183,7 +183,40 @@ export const Slider = () => {
                   onMouseLeave={handleMouseSwipe}>
                   <a>
                     {/* <img src={items[itemIndex]} alt={`banner${itemIndex}`} /> */}
-                    <div className="bg-img" style={{ backgroundImage: `url(${items[itemIndex]})` }}></div>
+                    <div className="bg-img" style={{ backgroundImage: `url(${items[itemIndex]})` }}>
+                      {itemIndex === 0 && (
+                        <div style={{ padding: '50px 30px' }}>
+                          <p style={{ fontSize: 24 }}>탄탄한 커리어를 쌓는 방법</p>
+                          <p style={{ fontSize: 20 }}>
+                            <span style={{ color: '#FB9310' }}>bithumb X Codestates</span>와 함께하세요!
+                          </p>
+                        </div>
+                      )}
+
+                      {itemIndex === 1 && (
+                        <div style={{ padding: '80px 30px' }}>
+                          <p style={{ fontSize: 24, margin: 0 }}>입금만 해도</p>
+                          <p style={{ fontSize: 24, margin: 0 }}>비트코인 증정</p>
+                          <p style={{ fontSize: 20, margin: 0 }}>
+                            <span style={{ color: '#FB9310' }}>#첫시작은빗썸#빠른빗썸</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {itemIndex === 2 && (
+                        <div style={{ padding: '50px 30px' }}>
+                          <p style={{ fontSize: 24, margin: 0 }}>암호화폐 모의투자</p>
+
+                          <p style={{ fontSize: 20, margin: 0 }}>
+                            <span style={{ color: '#FB9310' }}>BITMOI</span>
+                            에서 실전처럼 암호화폐 투자를 체험해보세요!
+                            <br /> 참가자들의 수익률 현황은 랭킹에서 확인하실 수 있습니다!
+                          </p>
+                        </div>
+                      )}
+
+                      {/* <p>{JSON.stringify(itemIndex)}</p> */}
+                    </div>
                   </a>
                 </div>
               );

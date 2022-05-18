@@ -72,6 +72,13 @@
     }
     .button_wrap {
       @include center_mid();
+      .logout_wrap {
+        @include center_mid();
+        .username {
+          margin-right: 10px;
+          font-size: 15px;
+        }
+      }
       .login_btn {
         margin-right: 20px;
         color: $white;

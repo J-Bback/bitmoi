@@ -1,7 +1,7 @@
 .slider-area{
     position: relative;
     overflow: hidden;
-    height: auto;
+    height: 250px;
 }
 .slider{
     position: relative;
@@ -43,7 +43,6 @@
 
 .slider-item{
     position: relative;
-    height: 100%;
     padding: 0 12px;
     float: left;
     -webkit-filter: brightness(50%);
@@ -74,16 +73,16 @@
 .slider-item div{
     display: flex;
     flex-direction: column;
-    align-items: center;
-    height: 300px;
+    /* align-items: center; */
+    height: 250px !important;
     color: white;
-    justify-content: center;
-    font-size: 60px;
+    justify-content: space-between;
+    /* font-size: 60px; */
     font-weight: bold;
 }
 .slider-item span{
-    font-size: 18px;
-    margin-bottom: 1rem ;
+    /* font-size: 18px;
+    margin-bottom: 1rem ; */
 }
 .current-slide{
     -webkit-filter: none;

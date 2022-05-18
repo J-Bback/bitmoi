@@ -109,9 +109,9 @@ const Exchange = (props: any) => {
     }
   }, [selectedCurrency]);
 
-  // useEffect(() => {
-  //   getOrderBookHistory();
-  // }, []);
+  useEffect(() => {
+    getOrderBookHistory();
+  }, []);
 
   const intervalParser = (time: string) => {
     switch (time) {
@@ -194,7 +194,6 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('getOrderBook responseJson.data', responseJson.data);
         setOrderbook(responseJson.data);
       }
     } catch (error) {
@@ -220,7 +219,6 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('orderBidOrAsk responseJson.data', responseJson);
         getOrderBookHistory();
       }
     } catch (error) {
@@ -260,7 +258,7 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('getOrderBookHistory responseJson.data', responseJson);
+        setOrderbookHistory(responseJson);
       }
     } catch (error) {
       console.log(error);

@@ -22,13 +22,17 @@ const Login = () => {
   const password = useRef<any>();
   const password2 = useRef<any>();
 
-  const emailValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     // validate email
     e.target.value = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
     // set
     setEmail(e.target.value);
-    return;
+    return emailValidation();
+  };
+  const emailValidation = () => {
+    const reg = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    return reg.test(email);
   };
 
   const onChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +41,10 @@ const Login = () => {
 
   const validateEmail = async () => {
     if (email.length === 0) {
-      alert('이메일을 입력해주세요.');
+      return alert('이메일을 입력해주세요.');
+    }
+    if (!emailValidation()) {
+      return alert('이메일 형식을 확인해주세요.');
     }
     const data = {
       url: `https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/check`,
@@ -52,7 +59,7 @@ const Login = () => {
         if (responseData.message === 'FAIL') {
           return alert('이미 존재하는 이메일입니다.');
         }
-        alert('이메일 중복확인을 완료하였습니다.');
+        return alert('이메일 중복확인을 완료하였습니다.');
       }
     } catch (error) {
       console.log(error);
@@ -75,7 +82,7 @@ const Login = () => {
 
       if (response?.status === 200) {
         if (responseData.message === 'FAIL') {
-          return alert('입력정보를 다시 확인해주세요.');
+          return alert('입력정보를 확인해주세요.');
         }
         alert('회원가입이 완료되었습니다.');
         goLogin();
@@ -93,8 +100,12 @@ const Login = () => {
 
     if (email.trim().length === 0) {
       setIdWarning(true);
-      setIdWarningMessage('아이디를 입력해주세요');
+      setIdWarningMessage('이메일을 입력해주세요');
       return;
+    }
+
+    if (!emailValidation()) {
+      return alert('이메일 형식을 확인해주세요.');
     }
 
     if (passwordValue?.trim().length === 0) {
@@ -106,8 +117,6 @@ const Login = () => {
       setPasswordWarning(true);
       setPasswordWarningMessage('비밀번호를 입력해주세요');
       return;
-      // setIdWarning(false);
-      // setIdWarningMessage('');
     }
 
     if (password2Value?.trim().length === 0) {
@@ -119,8 +128,6 @@ const Login = () => {
       setPassword2Warning(true);
       setPassword2WarningMessage('비밀번호를 입력해주세요');
       return;
-      // setIdWarning(false);
-      // setIdWarningMessage('');
     }
 
     if (passwordValue !== password2Value) {
@@ -135,9 +142,7 @@ const Login = () => {
     }
 
     if (regPhone.test(phone) !== true) {
-      console.log('asdfsaf');
-      alert('휴대전화번호 형식을 확인해주세요.');
-      return;
+      return alert('휴대전화번호 형식을 확인해주세요.');
     }
 
     if (password2Value?.trim().length !== 0 && passwordValue?.trim().length !== 0 && email.trim().length !== 0) {
@@ -170,9 +175,10 @@ const Login = () => {
             type="email"
             className={styles.email_input}
             placeholder={'email@example.com'}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => emailValidation(e)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeEmail(e)}
           />
-          <input type="button" value="중복확인" className={styles.validate_button} onClick={() => validateEmail()} />
+          {/* <input type="button" value="중복확인" className={styles.validate_button} onClick={() => validateEmail()} /> */}
+          <Button btnText="중복확인" className={styles.validate_button} btnClick={() => validateEmail()} />
         </div>
         <div className={styles.warning}>{idWarning && idWarningMessage}</div>
         <div className={styles.nickname}>이름</div>
