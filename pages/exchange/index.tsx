@@ -143,11 +143,8 @@ const Exchange = (props: any) => {
   // }, [orderbookHistory]);
   useEffect(() => {
     getOrderBookHistory();
-  }, []);
-
-  useEffect(() => {
     getTransactionHistory(authStore?.userId);
-  }, [transactionHistory]);
+  }, []);
 
   const intervalParser = (time: string) => {
     switch (time) {
@@ -294,6 +291,7 @@ const Exchange = (props: any) => {
       if (response.status === 200) {
         console.log('user responseJson', responseJson);
         setOrderbookHistory(responseJson);
+        return getTransactionHistory(authStore?.userId);
       }
     } catch (error) {
       console.log(error);
