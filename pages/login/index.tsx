@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import jwt from 'jsonwebtoken';
 import { setCookie, getCookie } from '../../utils/cookie';
@@ -17,11 +17,17 @@ const Login = () => {
   const [idWarningMessage, setIdWarningMessage] = useState<string>('');
   const [passwordWarning, setPasswordWarning] = useState<boolean>(false);
   const [passwordWarningMessage, setPasswordWarningMessage] = useState<string>('');
+  const [isActiveBtn, setIsActiveBtn] = useState<boolean>(false);
 
   const store = initializeStore();
   const router = useRouter();
   const password = useRef<any>();
   const { authStore } = store;
+
+  useEffect(() => {
+    if (password.current.value?.trim().length !== 0 && email.trim().length !== 0) setIsActiveBtn(true);
+  }, [email, password.current?.value]);
+
   const emailValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     // validate email
@@ -136,7 +142,11 @@ const Login = () => {
         <input className={styles.input} placeholder={'비밀번호'} type="password" ref={password} />
         <div className={styles.warning}>{passwordWarning && passwordWarningMessage}</div>
         <div>
-          <Button btnText="로그인" className={styles.login_button} btnClick={(e: any) => loginValidation(e)} />
+          <Button
+            btnText="로그인"
+            className={isActiveBtn ? styles.login_button_active : styles.login_button}
+            btnClick={(e: any) => loginValidation(e)}
+          />
         </div>
         <div className={styles.signup_button}>
           <div className={styles.signup} onClick={() => goSignup()}>{`회원가입`}</div>

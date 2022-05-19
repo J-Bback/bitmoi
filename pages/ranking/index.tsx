@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Table from '../../components/Table';
 import styles from '../ranking/Ranking.module.scss';
 import CallApi from '../../utils/callApi';
@@ -25,6 +25,16 @@ type UserWallet = {
 const Ranking = () => {
   const [rankingList, setRankingList] = useState<Array<Ranking>>([]);
   const [userWallet, setUserWallet] = useState<Array<UserWallet>>([]);
+  const [modal, setModal] = useState<boolean>(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (modal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [modal]);
 
   useEffect(() => {
     getRankingList();
@@ -71,6 +81,10 @@ const Ranking = () => {
     console.log('userWallet DATA', data);
   };
 
+  const handleCloseModal = (e: any) => {
+    if (modal && (!modalRef.current || !modalRef.current.contains(e.target))) setModal(false);
+  };
+
   const tbodyData = () => {
     return rankingList?.map((item: Ranking, i: number) => {
       return (
@@ -88,7 +102,12 @@ const Ranking = () => {
           <td style={{ width: 1200 / 5 }}>{`${item.assets.toLocaleString()} KRW`}</td>
           <td style={{ width: 1200 / 5 }}>{`${Math.round(item.yeild * 100) / 100} %`}</td>
           <td style={{ width: 1200 / 5, justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
-            <div className={styles.modal_button} onClick={() => getUserWallet(item.userId)}>
+            <div
+              className={styles.modal_button}
+              onClick={() => {
+                setModal(true);
+                getUserWallet(item.userId);
+              }}>
               {'확인'}
             </div>
           </td>
@@ -97,8 +116,56 @@ const Ranking = () => {
     });
   };
 
+  const tbodyDataWallet = () => {
+    return userWallet?.map((item: any, i: number) => {
+      return (
+        <tr
+          key={i}
+          style={{
+            display: 'flex',
+            textAlign: 'center',
+            height: '35px',
+            alignItems: 'center',
+            backgroundColor: '#ffffff',
+          }}>
+          <td style={{ width: 100 }}>{item.avgPrice}</td>
+          <td style={{ width: 100 }}>{item.coinId}</td>
+          <td style={{ width: 100 }}>{item.createdAt}</td>
+          <td style={{ width: 100 }}>{item.quantity}</td>
+          <td style={{ width: 100 }}>{item.userId}</td>
+          <td style={{ width: 100 }}>{item.waitingQty}</td>
+          <td style={{ width: 100 }}>{item.walletId}</td>
+        </tr>
+      );
+    });
+  };
+
   return (
     <div>
+      {modal && (
+        <>
+          <div onClick={handleCloseModal} className={styles.modal_wrapper}>
+            <div ref={modalRef} className={styles.modal_in}>
+              <Table
+                theadWidth={[100, 100, 100, 100, 100]}
+                theadTextAlign={['center', 'center', 'center', 'center', 'center']}
+                theadData={['avg', 'coinId', 'createdAt', 'quantity', 'userId', 'waitingQty', 'walletId']}
+                tbodyData={tbodyDataWallet()}
+                tbodyStyle={{ fontSize: '14px', fontWeight: 400 }}
+                emptyTable={{
+                  text: '검색된 가상자산이 없습니다',
+                  style: { fontSize: '13px', textAlign: 'center', padding: '20px' },
+                }}
+                tableStyle={{
+                  width: '50%',
+                  justifyItems: 'center',
+                }}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
       <div className={styles.container}>
         <div className={styles.ranking_wrap}>
           <div className={styles.ranking}>
@@ -178,7 +245,7 @@ const Ranking = () => {
           </div>
         </div>
 
-        <p className={styles.font_title}>명예의 전당</p>
+        <p className={styles.font_title}>🎖명예의 전당</p>
         <Table
           theadWidth={[1200 / 5, 1200 / 5, 1200 / 5, 1200 / 5, 1200 / 5]}
           theadTextAlign={['center', 'center', 'center', 'center', 'center']}
