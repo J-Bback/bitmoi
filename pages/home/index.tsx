@@ -35,6 +35,10 @@ const Home = (props: any) => {
     }, 1000);
   }, [currencyList]);
 
+  // useEffect(() => {
+  //   getTicker();
+  // }, []);
+
   const getTicker = async () => {
     try {
       const orderCurrency = 'ALL';
@@ -42,7 +46,7 @@ const Home = (props: any) => {
 
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);

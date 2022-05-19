@@ -84,7 +84,7 @@ const Ranking = () => {
           }}>
           <td style={{ width: 1200 / 5 }}>{item.ranking}</td>
           <td style={{ width: 1200 / 5 }}>{item.name}</td>
-          <td style={{ width: 1200 / 5 }}>{item.assets.toLocaleString()}</td>
+          <td style={{ width: 1200 / 5 }}>{`${item.assets.toLocaleString()} KRW`}</td>
           <td style={{ width: 1200 / 5 }}>{`${Math.round(item.yeild * 100) / 100} %`}</td>
           <td style={{ width: 1200 / 5, justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
             <div className={styles.modal_button} onClick={() => openWalletModal(item.userId)}>
@@ -105,6 +105,11 @@ const Ranking = () => {
           </div>
           <div className={styles.rank}>
             <img src="/images/rank1.png" style={{ width: 50, height: 'auto' }} />
+            <div style={{ marginTop: 10, fontSize: 20 }}>{`${rankingList[0]?.name} 님`}</div>
+            <div style={{ textAlign: 'center', marginTop: 20 }}>
+              <div>{`총 자산: ${rankingList[0]?.assets.toLocaleString()} KRW`}</div>
+              <div>{`총 수익률: ${Math.round(rankingList[0]?.yeild * 100) / 100} %`}</div>
+            </div>
           </div>
           <div className={styles.ranking}>
             <img src="/images/rank3.png" style={{ width: 50, height: 'auto' }} />

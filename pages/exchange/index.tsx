@@ -99,7 +99,7 @@ const Exchange = (props: any) => {
   const [orderTotalPrice, setOrderTotalPrice] = useState<string>('0');
   const [orderCount, setOrderCount] = useState<number>();
   const [orderbookHistory, setOrderbookHistory] = useState<Array<OrderBookHistory>>([]);
-  const [transactionHistory, setTransactionHistory] = useState();
+  const [transactionHistory, setTransactionHistory] = useState<Array<Transaction>>([]);
 
   const store = initializeStore();
   const router = useRouter();
@@ -108,13 +108,19 @@ const Exchange = (props: any) => {
 
   useInterval(() => {
     getData();
-  }, 1000);
+  }, 3000);
   useInterval(() => {
     getTicker();
-  }, 1000);
+  }, 3000);
   useInterval(() => {
     getOrderBook();
-  }, 100000);
+  }, 3000);
+
+  useEffect(() => {
+    getData();
+    getTicker();
+    getOrderBook();
+  }, []);
   useEffect(() => {
     async function fetchAndSetOrderPrice() {
       const data = currencyList;
@@ -138,9 +144,6 @@ const Exchange = (props: any) => {
     }
   }, [selectedCurrency]);
 
-  // useEffect(() => {
-  //   getOrderBookHistory();
-  // }, [orderbookHistory]);
   useEffect(() => {
     getOrderBookHistory();
     getTransactionHistory(authStore?.userId);
@@ -168,7 +171,7 @@ const Exchange = (props: any) => {
       const chartIntervals = intervalParser(chartSelect);
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`,
       };
 
       const response: any = await CallApi(data);
@@ -201,7 +204,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);
@@ -221,7 +224,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);
@@ -289,7 +292,6 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('user responseJson', responseJson);
         setOrderbookHistory(responseJson);
         return getTransactionHistory(authStore?.userId);
       }
@@ -580,6 +582,7 @@ const Exchange = (props: any) => {
     });
   };
   const orderTbodyData = () => {
+    console.log('orderbookHistory', orderbookHistory);
     return orderbookHistory?.map((item: OrderBookHistory, i: number) => {
       return (
         <tr
@@ -591,18 +594,18 @@ const Exchange = (props: any) => {
             backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
           }}>
           {/* // 150, 60, 70, 135, 135, 135, 135, 80 */}
-          <td style={{ width: 150 }}>{coinList[item.coinid - 1]}</td>
+          <td style={{ width: 150 }}>{coinList[item?.coinid]}</td>
           <td
             style={{
-              color: item.types === 'bid' ? '#D13C4B' : item.types === 'ask' ? '#1F5ED2' : '#000000',
+              color: item?.types === 'bid' ? '#D13C4B' : item?.types === 'ask' ? '#1F5ED2' : '#000000',
               width: 60,
             }}>
-            {item.types === 'bid' ? '매수' : item.types === 'ask' ? '매도' : '거절'}
+            {item?.types === 'bid' ? '매수' : item?.types === 'ask' ? '매도' : '거절'}
           </td>
-          <td style={{ width: 70 }}>{item.state === 'wait' ? '대기' : item.state === 'cancel' ? '취소' : '체결'}</td>
-          <td style={{ width: 135 }}>{`${item.quantity?.toLocaleString()}`}</td>
-          <td style={{ width: 135 }}>{`${item.price?.toLocaleString()} KRW`}</td>
-          <td style={{ width: 135 }}>{(1000000 * 22.7894)?.toLocaleString()}</td>
+          <td style={{ width: 70 }}>{item?.state === 'wait' ? '대기' : item?.state === 'cancel' ? '취소' : '체결'}</td>
+          <td style={{ width: 135 }}>{`${item?.quantity?.toLocaleString() || 0}`}</td>
+          <td style={{ width: 135 }}>{`${item?.price?.toLocaleString() || 0} KRW`}</td>
+          <td style={{ width: 135 }}>{`${(item?.quantity * (item.price ?? 0))?.toLocaleString()} KRW`}</td>
           <td style={{ width: 135 }}>
             {dayjs(
               `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
@@ -747,7 +750,7 @@ const Exchange = (props: any) => {
                   theadData={['매도 (KRW)', '수량 (BTC)']}
                   tbodyData={tableOrderAskBody()}
                   emptyTable={{
-                    text: '정보를 불러오는 중입니다.',
+                    text: '주문내역이 없습니다.',
                     style: {
                       fontSize: '13px',
                       textAlign: 'center',
@@ -904,7 +907,7 @@ const Exchange = (props: any) => {
               />
             </section>
           </div>
-          <div className={styles.history_title}>{`나의 주문내역 (총 ${1}건)`}</div>
+          <div className={styles.history_title}>{`나의 주문내역 (총 ${orderbookHistory.length}건)`}</div>
           <Table
             theadWidth={[150, 60, 70, 135, 135, 135, 135, 80]}
             theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center', 'center']}
@@ -925,7 +928,7 @@ const Exchange = (props: any) => {
             }}
             tbodyStyle={{ height: '200px', overflowY: 'auto' }}
           />
-          <div className={styles.history_title}>{`나의 체결내역 (총 ${1}건)`}</div>
+          <div className={styles.history_title}>{`나의 체결내역 (총 ${transactionHistory?.length}건)`}</div>
           <Table
             theadWidth={[100, 100, 150, 150, 150, 150, 100]}
             theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center']}
