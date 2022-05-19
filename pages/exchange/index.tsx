@@ -72,16 +72,17 @@ type Transaction = {
 };
 
 const coinList = [
-  '비트코인',
-  '이더리움',
-  '라이트코인',
-  '이더리움클래식',
-  '리플',
-  '비트코인캐시',
-  '퀀텀',
-  '비트코인골드',
-  '이오스',
-  '아이콘',
+  { label: '비트코인', symbol: 'BTC', id: 0 },
+  { label: '이더리움', symbol: 'ETH', id: 0 },
+  { label: '라이트코인', symbol: 'LTC', id: 0 },
+  { label: '이더리움클래식', symbol: 'ETC', id: 0 },
+  { label: '리플', symbol: 'XRP', id: 0 },
+  { label: '비트코인캐시', symbol: 'BTC', id: 0 },
+  { label: '퀀텀', symbol: 'BTC', id: 0 },
+  { label: '비트코인골드', symbol: 'BTC', id: 0 },
+  { label: '이오스', symbol: 'BTC', id: 0 },
+  { label: '아이콘', symbol: 'BTC', id: 0 },
+  { label: '트론', symbol: 'BTC', id: 0 },
 ];
 
 const Exchange = (props: any) => {
@@ -99,7 +100,7 @@ const Exchange = (props: any) => {
   const [orderTotalPrice, setOrderTotalPrice] = useState<string>('0');
   const [orderCount, setOrderCount] = useState<number>();
   const [orderbookHistory, setOrderbookHistory] = useState<Array<OrderBookHistory>>([]);
-  const [transactionHistory, setTransactionHistory] = useState();
+  const [transactionHistory, setTransactionHistory] = useState<Array<Transaction>>([]);
 
   const store = initializeStore();
   const router = useRouter();
@@ -108,20 +109,25 @@ const Exchange = (props: any) => {
 
   useInterval(() => {
     getData();
-  }, 1000);
+  }, 3000);
   useInterval(() => {
     getTicker();
-  }, 1000);
+  }, 3000);
   useInterval(() => {
     getOrderBook();
-  }, 100000);
+  }, 3000);
+
+  useEffect(() => {
+    getData();
+    getTicker();
+    getOrderBook();
+  }, []);
+
   useEffect(() => {
     async function fetchAndSetOrderPrice() {
       const data = currencyList;
-      // const coinPrice = costComma(data[selectedCurrency]?.closing_price);
       const coinPrice = Number(data[selectedCurrency]?.closing_price);
       setOrderPrice(coinPrice);
-      // setOrderCount('0');
       setOrderCount(0);
       setOrderTotalPrice('0');
     }
@@ -138,12 +144,11 @@ const Exchange = (props: any) => {
     }
   }, [selectedCurrency]);
 
-  // useEffect(() => {
-  //   getOrderBookHistory();
-  // }, [orderbookHistory]);
   useEffect(() => {
-    getOrderBookHistory();
-    getTransactionHistory(authStore?.userId);
+    if (authStore?.logged === true) {
+      getOrderBookHistory();
+      getTransactionHistory(authStore.userId);
+    }
   }, []);
 
   const intervalParser = (time: string) => {
@@ -168,7 +173,7 @@ const Exchange = (props: any) => {
       const chartIntervals = intervalParser(chartSelect);
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`,
       };
 
       const response: any = await CallApi(data);
@@ -201,7 +206,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);
@@ -221,7 +226,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`,
+        url: `https://bitmoi-proxy.herokuapp.com/https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);
@@ -235,6 +240,9 @@ const Exchange = (props: any) => {
   };
 
   const orderBidOrAsk = async () => {
+    const targetCoin = coinList.find((item) => item.symbol === selectedCurrency);
+    const coinId = targetCoin?.id || 0;
+    const orderState = orderType === 'market' ? 'execute' : 'wait';
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
       const url = 'http://52.78.124.218:9000/orders';
@@ -242,17 +250,21 @@ const Exchange = (props: any) => {
         method: 'POST',
         url: url,
         body: {
-          user_id: 23,
-          coin_id: 101, // selectedCoin : ex) 'BTC' 심볼과 id를 맞춰야한다.
+          coin_id: coinId, // selectedCoin : ex) 'BTC' 심볼과 id를 맞춰야한다.
           quantity: orderCount,
           price: orderPrice,
           types: type,
+          state: orderState,
         },
       };
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
         return getOrderBookHistory();
+      } else if (response.status === 400) {
+        return alert('로그인이 필요합니다.');
+      } else {
+        return;
       }
     } catch (error) {
       console.log(error);
@@ -270,7 +282,6 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('cancelOrder responseJson.data', responseJson);
         return getOrderBookHistory();
       }
     } catch (error) {
@@ -289,9 +300,7 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('user responseJson', responseJson);
         setOrderbookHistory(responseJson);
-        return getTransactionHistory(authStore?.userId);
       }
     } catch (error) {
       console.log(error);
@@ -361,66 +370,24 @@ const Exchange = (props: any) => {
     }
   };
 
-  const inputPriceFormat = (str: string) => {
-    const comma = (str: string) => {
-      str = String(str);
-      return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
-    };
-    const uncomma = (str: string) => {
-      str = String(str);
-      return str.replace(/[^\d]+/g, '');
-    };
-    return comma(uncomma(str));
-  };
-
-  const inputPriceUncomma = (str: string) => {
-    const uncomma = (str: string) => {
-      str = String(str);
-      return str.replace(/[^\d]+/g, '');
-    };
-    return uncomma(str);
-  };
-
-  // const onChangePrice = (e: any) => {
-  //   // e.target.value = e.target.value.replace(/[^-\.0-9]/g, '');
-  //   const value = e.target.value;
-  //   e.preventDefault();
-  //   if (value.length > 15) return '';
-  //   if (value.match(/[a-z|A-Z|ㄱ-ㅎ]/g)) return '';
-
-  //   console.log('eee', value);
-  //   if (value.includes('.')) {
-  //     setOrderPrice(e.target.value);
-  //   } else {
-  //     setOrderPrice(inputPriceFormat(value));
-  //   }
-
-  //   if (orderCount) {
-  //     if (value.length === 0) {
-  //       return setOrderTotalPrice('0');
-  //     }
-  //     if (value.includes('.')) {
-  //       const totalPrice = Number(value) * Number(inputPriceUncomma(orderCount));
-  //       setOrderTotalPrice(totalPrice.toLocaleString());
-  //     } else {
-  //       const totalPrice = Number(inputPriceUncomma(value)) * Number(inputPriceUncomma(orderCount));
-  //       setOrderTotalPrice(totalPrice.toLocaleString());
-  //     }
-  //   }
+  // const inputPriceFormat = (str: string) => {
+  //   const comma = (str: string) => {
+  //     str = String(str);
+  //     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+  //   };
+  //   const uncomma = (str: string) => {
+  //     str = String(str);
+  //     return str.replace(/[^\d]+/g, '');
+  //   };
+  //   return comma(uncomma(str));
   // };
 
-  // const onChangeCount = (e: any) => {
-  //   e.preventDefault();
-  //   if (e.target.value.length > 18) return '';
-  //   if (e.target.value.match(/[a-z|A-Z|ㄱ-ㅎ]/g)) return '';
-  //   setOrderCount(Number(e.target.value.replaceAll(',', '')).toLocaleString());
-  //   if (orderPrice) {
-  //     if (e.target.value.length === 0) {
-  //       return setOrderTotalPrice('0');
-  //     }
-  //     const totalPrice = Number(e.target.value.replaceAll(',', '')) * Number(orderPrice.replaceAll(',', ''));
-  //     setOrderTotalPrice(totalPrice.toLocaleString());
-  //   }
+  // const inputPriceUncomma = (str: string) => {
+  //   const uncomma = (str: string) => {
+  //     str = String(str);
+  //     return str.replace(/[^\d]+/g, '');
+  //   };
+  //   return uncomma(str);
   // };
 
   const tbodyData = () => {
@@ -544,8 +511,8 @@ const Exchange = (props: any) => {
             backgroundColor: '#F5FAFF',
           }}
           onClick={() => {
-            // setOrderPrice(Number(item.price).toLocaleString());
             setOrderPrice(Number(item.price));
+            setOrderCount(Number(item.quantity));
           }}>
           <td style={{ color: '#1F5ED2' }}>{`${Number(item?.price)?.toLocaleString()} KRW`}</td>
           <td>{item.quantity}</td>
@@ -570,7 +537,6 @@ const Exchange = (props: any) => {
             backgroundColor: '#FFF4F8',
           }}
           onClick={() => {
-            // setOrderPrice(Number(item.price).toLocaleString());
             setOrderPrice(Number(item.price));
           }}>
           <td style={{ color: '#D13C4B' }}>{`${Number(item?.price)?.toLocaleString()} KRW`}</td>
@@ -586,29 +552,31 @@ const Exchange = (props: any) => {
           key={i}
           style={{
             textAlign: 'center',
+            display: 'flex',
             height: '30px',
             alignItems: 'center',
             backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
           }}>
-          {/* // 150, 60, 70, 135, 135, 135, 135, 80 */}
-          <td style={{ width: 150 }}>{coinList[item.coinid - 1]}</td>
+          <td style={{ width: 150 }}>{coinList[item?.coinid].label}</td>
           <td
             style={{
-              color: item.types === 'bid' ? '#D13C4B' : item.types === 'ask' ? '#1F5ED2' : '#000000',
+              color: item?.types === 'bid' ? '#D13C4B' : item?.types === 'ask' ? '#1F5ED2' : '#000000',
               width: 60,
             }}>
-            {item.types === 'bid' ? '매수' : item.types === 'ask' ? '매도' : '거절'}
+            {item?.types === 'bid' ? '매수' : item?.types === 'ask' ? '매도' : '거절'}
           </td>
-          <td style={{ width: 70 }}>{item.state === 'wait' ? '대기' : item.state === 'cancel' ? '취소' : '체결'}</td>
-          <td style={{ width: 135 }}>{`${item.quantity?.toLocaleString()}`}</td>
-          <td style={{ width: 135 }}>{`${item.price?.toLocaleString()} KRW`}</td>
-          <td style={{ width: 135 }}>{(1000000 * 22.7894)?.toLocaleString()}</td>
+          <td style={{ width: 70 }}>{item?.state === 'wait' ? '대기' : item?.state === 'cancel' ? '취소' : '체결'}</td>
+          <td style={{ width: 135 }}>{`${item?.quantity?.toLocaleString() || 0}`}</td>
+          <td style={{ width: 135 }}>{`${item?.price?.toLocaleString() || 0} KRW`}</td>
+          <td style={{ width: 135 }}>{`${((item?.quantity || 0) * (item.price ?? 0))?.toLocaleString() || 0} KRW`}</td>
           <td style={{ width: 135 }}>
             {dayjs(
               `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
             ).format('YYYY-MM-DD HH:mm')}
           </td>
-          <td style={{ width: 80, cursor: 'pointer' }} onClick={() => cancelOrder(item.orderbookid)}>
+          <td
+            style={{ width: 80, cursor: 'pointer', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+            onClick={() => cancelOrder(item.orderbookid)}>
             <div className={styles.cancel_button}>{'주문취소'}</div>
           </td>
         </tr>
@@ -618,25 +586,40 @@ const Exchange = (props: any) => {
 
   const transactionTbodyData = () => {
     const data = transactionHistory;
+    const targetCoin = coinList.find((item) => item.symbol === selectedCurrency);
+    const coinId = targetCoin?.id || 0;
 
-    // return transactionHistory?.map((item: Transaction, i: number) => {
-    //   return (
-    //     <tr
-    //       key={i}
-    //       style={{
-    //         textAlign: 'center',
-    //         height: '30px',
-    //         alignItems: 'center',
-    //         backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
-    //       }}>
-    //       <td style={{ color: '#D13C4B' }}>{`${Number(item.price).toLocaleString()} KRW`}</td>
-    //       <td>{item.quantity}</td>
-    //     </tr>
-    //   );
-    // });
+    return data?.map((item: Transaction, i: number) => {
+      return (
+        <tr
+          key={i}
+          style={{
+            textAlign: 'center',
+            display: 'flex',
+            height: '30px',
+            alignItems: 'center',
+            backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
+          }}>
+          <td style={{ width: 150 }}>{coinList[item?.coin_id]?.label || '비트코인'}</td>
+          <td
+            style={{
+              color: item?.types === 'bid' ? '#D13C4B' : item?.types === 'ask' ? '#1F5ED2' : '#000000',
+              width: 60,
+            }}>
+            {item?.types === 'bid' ? '매수' : item?.types === 'ask' ? '매도' : '거절'}
+          </td>
+          <td style={{ width: 135 }}>{`${item?.quantity?.toLocaleString() || 0}`}</td>
+          <td style={{ width: 135 }}>{`${item?.price?.toLocaleString() || 0} KRW`}</td>
+          <td style={{ width: 135 }}>{`${(item?.quantity * (item.price ?? 0))?.toLocaleString()} KRW`}</td>
+          <td style={{ width: 135 }}>{dayjs(item?.created_at).format('YYYY-MM-DD HH:mm')}</td>
+          <td style={{ width: 80, justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
+            <div className={styles.cancel_button}>{item?.types === 'cancel' ? '취소' : '체결'}</div>
+          </td>
+        </tr>
+      );
+    });
   };
 
-  // 리턴값
   return (
     <main className={styles.exchange_wrap}>
       <div className={styles.container}>
@@ -747,7 +730,7 @@ const Exchange = (props: any) => {
                   theadData={['매도 (KRW)', '수량 (BTC)']}
                   tbodyData={tableOrderAskBody()}
                   emptyTable={{
-                    text: '정보를 불러오는 중입니다.',
+                    text: '주문내역이 없습니다.',
                     style: {
                       fontSize: '13px',
                       textAlign: 'center',
@@ -785,7 +768,6 @@ const Exchange = (props: any) => {
             </section>
             <div style={{ flex: 0.5 }}></div>
             <section className={styles.order_wrap}>
-              {/* 매수 매도 탭 */}
               <div>
                 <div style={{ width: '100%', marginBottom: 20 }}>
                   <Tab
@@ -860,30 +842,20 @@ const Exchange = (props: any) => {
                 </div>
                 <div className={styles.selling_price_item_container}>
                   <div className={styles.order_title}>주문가격</div>
-                  {/* <input
-                    className={styles.selling_price_input}
-                    onChange={(e: any) => onChangePrice(e)}
-                    value={orderPrice}
-                    type="text"
-                  /> */}
                   <input
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderPrice(e.target.value)}
                     type="number"
+                    value={orderPrice || 0}
                   />
                 </div>
                 <div className={styles.selling_price_item_container}>
                   <div className={styles.order_title}>주문수량</div>
-                  {/* <input
-                    className={styles.selling_price_input}
-                    onChange={(e: any) => onChangeCount(e)}
-                    value={orderCount}
-                    type="text"
-                  /> */}
                   <input
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderCount(e.target.value)}
                     type="number"
+                    value={orderCount || 0}
                   />
                 </div>
                 <div className={styles.trans_hr} />
@@ -899,19 +871,21 @@ const Exchange = (props: any) => {
                 id={`${bidOrAsk}`}
                 className={styles.order_button}
                 btnText={`${bidOrAsk}주문`}
-                inlineStyle={{ backgroundColor: bidOrAsk === '매수' ? '#F75467' : '#4386F9' }}
+                inlineStyle={{
+                  backgroundColor: bidOrAsk === '매수' ? '#F75467' : '#4386F9',
+                }}
                 btnClick={() => orderBidOrAsk()}
               />
             </section>
           </div>
-          <div className={styles.history_title}>{`나의 주문내역 (총 ${1}건)`}</div>
+          <div className={styles.history_title}>{`나의 주문내역 (총 ${orderbookHistory.length}건)`}</div>
           <Table
             theadWidth={[150, 60, 70, 135, 135, 135, 135, 80]}
             theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center', 'center']}
             theadData={['종목', '구분', '상태', '주문량', '주문가격', '총 주문금액', '주문시각', '주문취소']}
             tbodyData={orderTbodyData()}
             emptyTable={{
-              text: '정보를 불러오는 중입니다.',
+              text: authStore.logged === true ? '주문내역이 없습니다.' : '로그인이 필요합니다.',
               style: {
                 fontSize: '13px',
                 textAlign: 'center',
@@ -925,14 +899,14 @@ const Exchange = (props: any) => {
             }}
             tbodyStyle={{ height: '200px', overflowY: 'auto' }}
           />
-          <div className={styles.history_title}>{`나의 체결내역 (총 ${1}건)`}</div>
+          <div className={styles.history_title}>{`나의 체결내역 (총 ${transactionHistory?.length}건)`}</div>
           <Table
             theadWidth={[100, 100, 150, 150, 150, 150, 100]}
             theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center']}
-            theadData={['구분', '상태', '체결량', '체결가격', '총 주문금액', '주문시각', '주문취소']}
+            theadData={['종목', '구분', '체결량', '체결가격', '총 주문금액', '주문시각', '주문취소']}
             tbodyData={transactionTbodyData()}
             emptyTable={{
-              text: '정보를 불러오는 중입니다.',
+              text: authStore.logged === true ? '체결내역이 없습니다.' : '로그인이 필요합니다.',
               style: {
                 fontSize: '13px',
                 textAlign: 'center',

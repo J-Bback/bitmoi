@@ -11,6 +11,7 @@
     @include align-items(center);
   }
   .ranking {
+      position:relative;
       flex:1;
       width:300px;
       height:200px;
@@ -18,10 +19,13 @@
       border-radius: 16px;
       background-color: #fff;
       display: inline-block;
+      padding:20px;
+      overflow: hidden;
       // margin-right:20px;
       // padding:20px;
   }
   .rank {
+      position:relative;
       flex:1.2;
       width:400px;
       height:250px;
@@ -49,4 +53,37 @@
   border-radius: 3px;
   font-size: 10px;
   cursor: pointer;
+}
+
+
+// modal
+
+.modal_wrapper {
+  z-index: 1000;
+  color:#fff;
+  width:100%;
+  height:100vh;
+  position:fixed;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal_in {
+  width:50%;
+  height:500px;
+  background-color: #fff;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  color:black;
+  padding: 50px;
+}
+
+.modal_overlay {
+  position:absolute;
+  width:100%;
+  height:100%;
+
 }

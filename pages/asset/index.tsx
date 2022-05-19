@@ -44,7 +44,7 @@ const initialWallet = {
 };
 
 const coinList = [
-  '비트코인',
+  '비트코인', // 0
   '이더리움',
   '라이트코인',
   '이더리움클래식',
@@ -54,6 +54,7 @@ const coinList = [
   '비트코인골드',
   '이오스',
   '아이콘',
+  '트론', // 10
 ];
 
 export default function Asset({}: Props) {
@@ -76,6 +77,10 @@ export default function Asset({}: Props) {
     }
   }, []);
 
+  useEffect(() => {
+    getOrderBookHistory();
+  }, [orderbookHistory]);
+
   const getWallet = async () => {
     const data = {
       disabledErrorHandler: true,
@@ -96,14 +101,14 @@ export default function Asset({}: Props) {
 
   const getOrderBookHistory = async () => {
     try {
-      const url = 'http://52.78.124.218:9000/orderbook';
+      const url = 'http://52.78.124.218:9000/orderbook/user';
       const data = {
         method: 'GET',
         url: url,
       };
 
       const response: any = await CallApi(data);
-      const responseJson: Array<OrderBookHistory> = await response.json();
+      const responseJson: any = await response.json();
       if (response.status === 200) {
         setOrderbookHistory(responseJson);
       }
@@ -111,6 +116,24 @@ export default function Asset({}: Props) {
       console.log(error);
     }
   };
+
+  // const getOrderBookHistory = async () => {
+  //   try {
+  //     const url = 'http://52.78.124.218:9000/orderbook';
+  //     const data = {
+  //       method: 'GET',
+  //       url: url,
+  //     };
+
+  //     const response: any = await CallApi(data);
+  //     const responseJson: Array<OrderBookHistory> = await response.json();
+  //     if (response.status === 200) {
+  //       setOrderbookHistory(responseJson);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const orderTbodyData = () => {
     return orderbookHistory?.map((item: OrderBookHistory, i: number) => {
@@ -123,7 +146,7 @@ export default function Asset({}: Props) {
             alignItems: 'center',
             backgroundColor: '#ffffff',
           }}>
-          <td style={{ width: 200 }}>{coinList[item.coinid - 1]}</td>
+          <td style={{ width: 200 }}>{coinList[item.coinid]}</td>
           <td
             style={{
               color: item.types === 'bid' ? '#D13C4B' : item.types === 'ask' ? '#1F5ED2' : '#000000',
@@ -158,27 +181,27 @@ export default function Asset({}: Props) {
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>보유 KRW</div>
-                <div className={styles.asset_bold_text}>{`${wallet?.krw?.toLocaleString()} KRW`}</div>
+                <div className={styles.asset_bold_text}>{`${wallet?.krw?.toLocaleString() || 0} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 보유자산</div>
-                <div className={styles.asset_bold_text}>{`${wallet?.holdings?.toLocaleString()} KRW`}</div>
+                <div className={styles.asset_bold_text}>{`${wallet?.holdings?.toLocaleString() || 0} KRW`}</div>
               </div>
             </div>
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 매수금액</div>
-                <div>{`${wallet?.purchaseAmount?.toLocaleString()} KRW`}</div>
+                <div>{`${wallet?.purchaseAmount?.toLocaleString() || 0} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가금액</div>
-                <div>{`${wallet?.appraisalAmount?.toLocaleString()} KRW`}</div>
+                <div>{`${wallet?.appraisalAmount?.toLocaleString() || 0} KRW`}</div>
               </div>
             </div>
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가손익</div>
-                <div>{`${Number(wallet?.valuationPl)?.toLocaleString()} KRW`}</div>
+                <div>{`${Number(wallet?.valuationPl)?.toLocaleString() || 0} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가수익률</div>
