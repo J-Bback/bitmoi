@@ -33,11 +33,11 @@ const Login = () => {
 
   async function login(serverCookie: any, callback: any, jwt: any) {
     const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
-    setCookie('token', jwt, {
-      path: '/',
-      secure: true,
-      sameSite: 'none',
-    });
+    // setCookie('token', jwt, {
+    //   path: '/',
+    //   secure: true,
+    //   sameSite: 'none',
+    // });
 
     if (jwt && callback) {
       await callback(jwt);

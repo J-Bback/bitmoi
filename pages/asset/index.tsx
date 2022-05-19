@@ -66,7 +66,7 @@ export default function Asset({}: Props) {
 
   useEffect(() => {
     // 로그인 상태가 아니면 로그인 화면
-    if (authStore.logged === true) {
+    if (authStore.logged === false) {
       router.push({
         pathname: '/login',
       });
