@@ -1,4 +1,5 @@
 @import '../../styles/mixin.scss';
+@import '../../styles/variables.scss';
 
 .exchange_wrap {
   display: flex;
@@ -209,4 +210,14 @@ color:#fff;
   margin: 10px 0 5px 0;
   font-size: 14px;
   font-weight: bold;
+}
+
+.cancel_button {
+  @include center_mid();
+  width: 60px;
+  height: 20px;
+  border: 1px solid $main-color;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
 }

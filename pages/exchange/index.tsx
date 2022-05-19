@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { useRouter } from 'next/router';
-
+import dayjs from 'dayjs';
 import Image from 'next/image';
 import CallApi from '../../utils/callApi';
 import costComma from '../../helpers/costComma';
@@ -14,6 +14,7 @@ import Button from '../../atoms/Button';
 import Tab from '../../components/Tab';
 import Table from '../../components/Table';
 import { useInterval } from '../../hooks/UseInterval';
+import initializeStore from '../../stores';
 
 import styles from './Exchange.module.scss';
 
@@ -47,16 +48,41 @@ type OrderBook = {
 };
 
 type OrderBookHistory = {
+  coinid: number;
+  createdat: number[];
+  orderbookid: number;
+  price: number;
+  quantity: number;
+  state: string;
+  types: string;
+  updatedat: number[];
+  userid: number;
+};
+
+type Transaction = {
+  execute_id: null | number;
   order_id: number;
   user_id: number;
   coin_id: number;
   price: number;
   quantity: number;
   types: string;
-  state: string;
-  order_at: Date;
-  update_at?: Date;
+  created_at: string | Date;
+  updated_at: null | Date | string;
 };
+
+const coinList = [
+  '비트코인',
+  '이더리움',
+  '라이트코인',
+  '이더리움클래식',
+  '리플',
+  '비트코인캐시',
+  '퀀텀',
+  '비트코인골드',
+  '이오스',
+  '아이콘',
+];
 
 const Exchange = (props: any) => {
   const [series, setSeries] = useState<any>([]);
@@ -73,8 +99,11 @@ const Exchange = (props: any) => {
   const [orderTotalPrice, setOrderTotalPrice] = useState<string>('0');
   const [orderCount, setOrderCount] = useState<number>();
   const [orderbookHistory, setOrderbookHistory] = useState<Array<OrderBookHistory>>([]);
+  const [transactionHistory, setTransactionHistory] = useState();
 
+  const store = initializeStore();
   const router = useRouter();
+  const { authStore } = store;
   const { query } = router;
 
   useInterval(() => {
@@ -109,9 +138,16 @@ const Exchange = (props: any) => {
     }
   }, [selectedCurrency]);
 
+  // useEffect(() => {
+  //   getOrderBookHistory();
+  // }, [orderbookHistory]);
   useEffect(() => {
     getOrderBookHistory();
   }, []);
+
+  useEffect(() => {
+    getTransactionHistory(authStore?.userId);
+  }, [transactionHistory]);
 
   const intervalParser = (time: string) => {
     switch (time) {
@@ -219,37 +255,16 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        getOrderBookHistory();
+        return getOrderBookHistory();
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const cancelOrder = async (orderId: number) => {
+  const cancelOrder = async (orderbookId: number) => {
     try {
-      const url = `http://52.78.124.218:9000/order/cancel/${orderId}`;
-      const data = {
-        method: 'POST',
-        url: url,
-        data: {
-          order_id: orderId,
-        },
-      };
-
-      const response: any = await CallApi(data);
-      const responseJson: any = await response.json();
-      if (response.status === 200) {
-        console.log('cancelOrder responseJson.data', responseJson);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getOrderBookHistory = async () => {
-    try {
-      const url = 'http://52.78.124.218:9000/orderbook';
+      const url = `http://52.78.124.218:9000/order/cancel/${orderbookId}`;
       const data = {
         method: 'GET',
         url: url,
@@ -258,7 +273,46 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
+        console.log('cancelOrder responseJson.data', responseJson);
+        return getOrderBookHistory();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getOrderBookHistory = async () => {
+    try {
+      const url = 'http://52.78.124.218:9000/orderbook/user';
+      const data = {
+        method: 'GET',
+        url: url,
+      };
+
+      const response: any = await CallApi(data);
+      const responseJson: any = await response.json();
+      if (response.status === 200) {
+        console.log('user responseJson', responseJson);
         setOrderbookHistory(responseJson);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getTransactionHistory = async (userId: number) => {
+    try {
+      const url = `http://52.78.124.218:9000/executions/${userId}`;
+      const data = {
+        method: 'GET',
+        url: url,
+      };
+
+      const response: any = await CallApi(data);
+      const responseJson: any = await response.json();
+      if (response.status === 200) {
+        console.log('transaction responseJson', responseJson);
+        setTransactionHistory(responseJson);
       }
     } catch (error) {
       console.log(error);
@@ -495,7 +549,7 @@ const Exchange = (props: any) => {
             // setOrderPrice(Number(item.price).toLocaleString());
             setOrderPrice(Number(item.price));
           }}>
-          <td style={{ color: '#1F5ED2' }}>{`${Number(item.price).toLocaleString()} KRW`}</td>
+          <td style={{ color: '#1F5ED2' }}>{`${Number(item?.price)?.toLocaleString()} KRW`}</td>
           <td>{item.quantity}</td>
         </tr>
       );
@@ -521,16 +575,14 @@ const Exchange = (props: any) => {
             // setOrderPrice(Number(item.price).toLocaleString());
             setOrderPrice(Number(item.price));
           }}>
-          <td style={{ color: '#D13C4B' }}>{`${Number(item.price).toLocaleString()} KRW`}</td>
+          <td style={{ color: '#D13C4B' }}>{`${Number(item?.price)?.toLocaleString()} KRW`}</td>
           <td>{item.quantity}</td>
         </tr>
       );
     });
   };
   const orderTbodyData = () => {
-    const bidArray = orderbook?.bids;
-
-    return bidArray?.map((item: BidAndAsk, i: number) => {
+    return orderbookHistory?.map((item: OrderBookHistory, i: number) => {
       return (
         <tr
           key={i}
@@ -541,15 +593,25 @@ const Exchange = (props: any) => {
             backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
           }}>
           {/* // 150, 60, 70, 135, 135, 135, 135, 80 */}
-          <td style={{ width: 150 }}>{coinNameKR[selectedCurrency]}</td>
-          <td style={{ color: bidOrAsk === '매수' ? '#D13C4B' : '#1F5ED2', width: 60 }}>{bidOrAsk}</td>
-          <td style={{ width: 70 }}>대기</td>
-          <td style={{ width: 135 }}>22.7894000</td>
-          <td style={{ width: 135 }}>1,000,000</td>
-          <td style={{ width: 135 }}>{(1000000 * 22.7894).toLocaleString()}</td>
-          <td style={{ width: 135 }}>05-15 03:22</td>
-          <td style={{ width: 80, cursor: 'pointer' }} onClick={() => cancelOrder(32)}>
-            주문취소bt
+          <td style={{ width: 150 }}>{coinList[item.coinid - 1]}</td>
+          <td
+            style={{
+              color: item.types === 'bid' ? '#D13C4B' : item.types === 'ask' ? '#1F5ED2' : '#000000',
+              width: 60,
+            }}>
+            {item.types === 'bid' ? '매수' : item.types === 'ask' ? '매도' : '거절'}
+          </td>
+          <td style={{ width: 70 }}>{item.state === 'wait' ? '대기' : item.state === 'cancel' ? '취소' : '체결'}</td>
+          <td style={{ width: 135 }}>{`${item.quantity?.toLocaleString()}`}</td>
+          <td style={{ width: 135 }}>{`${item.price?.toLocaleString()} KRW`}</td>
+          <td style={{ width: 135 }}>{(1000000 * 22.7894)?.toLocaleString()}</td>
+          <td style={{ width: 135 }}>
+            {dayjs(
+              `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
+            ).format('YYYY-MM-DD HH:mm')}
+          </td>
+          <td style={{ width: 80, cursor: 'pointer' }} onClick={() => cancelOrder(item.orderbookid)}>
+            <div className={styles.cancel_button}>{'주문취소'}</div>
           </td>
         </tr>
       );
@@ -557,23 +619,23 @@ const Exchange = (props: any) => {
   };
 
   const transactionTbodyData = () => {
-    const bidArray = orderbook?.bids;
+    const data = transactionHistory;
 
-    return bidArray?.map((item: BidAndAsk, i: number) => {
-      return (
-        <tr
-          key={i}
-          style={{
-            textAlign: 'center',
-            height: '30px',
-            alignItems: 'center',
-            backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
-          }}>
-          <td style={{ color: '#D13C4B' }}>{`${Number(item.price).toLocaleString()} KRW`}</td>
-          <td>{item.quantity}</td>
-        </tr>
-      );
-    });
+    // return transactionHistory?.map((item: Transaction, i: number) => {
+    //   return (
+    //     <tr
+    //       key={i}
+    //       style={{
+    //         textAlign: 'center',
+    //         height: '30px',
+    //         alignItems: 'center',
+    //         backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
+    //       }}>
+    //       <td style={{ color: '#D13C4B' }}>{`${Number(item.price).toLocaleString()} KRW`}</td>
+    //       <td>{item.quantity}</td>
+    //     </tr>
+    //   );
+    // });
   };
 
   // 리턴값

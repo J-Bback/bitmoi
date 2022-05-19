@@ -5,6 +5,8 @@ import { setCookie, getCookie } from '../../utils/cookie';
 import apiAuth from '../api/auth';
 import apiLogin from '../api/login';
 import AuthStore from '../../stores/AuthStore';
+import initializeStore from '../../stores';
+import Cookies from 'universal-cookie';
 
 import Button from '../../atoms/Button';
 
@@ -16,10 +18,10 @@ const Login = () => {
   const [passwordWarning, setPasswordWarning] = useState<boolean>(false);
   const [passwordWarningMessage, setPasswordWarningMessage] = useState<string>('');
 
-  const store = new AuthStore();
+  const store = initializeStore();
   const router = useRouter();
   const password = useRef<any>();
-
+  const { authStore } = store;
   const emailValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     // validate email
@@ -28,6 +30,19 @@ const Login = () => {
     setEmail(e.target.value);
     return;
   };
+
+  async function login(serverCookie: any, callback: any, jwt: any) {
+    const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
+    setCookie('token', jwt, {
+      path: '/',
+      secure: true,
+      sameSite: 'none',
+    });
+
+    if (jwt && callback) {
+      await callback(jwt);
+    }
+  }
 
   const goHome = () => {
     router.push(
@@ -59,14 +74,11 @@ const Login = () => {
           return alert('이메일 또는 비밀번호가 맞지 않습니다.');
         }
         if (!!responseData?.accessToken) {
-          store.login(responseData.accessToken);
-          // setCookie('token', responseData.accessToken, {
-          //   path: '/',
-          //   secure: true,
-          //   sameSite: 'none',
-          // });
+          await login(null, authStore.login, responseData?.accessToken);
           goHome();
         }
+      } else {
+        alert('입력하신 정보를 확인해주세요.');
       }
     } catch (error) {
       console.log(error);
