@@ -147,7 +147,7 @@ const Exchange = (props: any) => {
   useEffect(() => {
     if (authStore?.logged === true) {
       getOrderBookHistory();
-      getTransactionHistory(authStore.userId);
+      getTransactionHistory(authStore?.userId);
     }
   }, []);
 
