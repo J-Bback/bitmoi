@@ -88,7 +88,7 @@ const Exchange = (props: any) => {
   }, 100000);
   useEffect(() => {
     async function fetchAndSetOrderPrice() {
-      const data = await getTicker();
+      const data = currencyList;
       // const coinPrice = costComma(data[selectedCurrency]?.closing_price);
       const coinPrice = Number(data[selectedCurrency]?.closing_price);
       setOrderPrice(coinPrice);
@@ -135,7 +135,7 @@ const Exchange = (props: any) => {
       const chartIntervals = intervalParser(chartSelect);
       const data = {
         method: 'GET',
-        url: `https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`, // https://cors-anywhere.herokuapp.com/
+        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`,
       };
 
       const response: any = await CallApi(data);
@@ -168,7 +168,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`, //https://cors-anywhere.herokuapp.com/
+        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);
@@ -188,7 +188,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`, //https://cors-anywhere.herokuapp.com/
+        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`,
       };
 
       const response: any = await CallApi(data);
