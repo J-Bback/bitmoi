@@ -132,9 +132,9 @@ export default function Asset({}: Props) {
             {item.types === 'bid' ? '매수' : item.types === 'ask' ? '매도' : '거절'}
           </td>
           <td style={{ width: 100 }}>{item.state === 'wait' ? '대기' : item.state === 'cancel' ? '취소' : '체결'}</td>
-          <td style={{ width: 150 }}>{`${item.quantity.toLocaleString()}`}</td>
-          <td style={{ width: 150 }}>{`${item.price.toLocaleString()} KRW`}</td>
-          <td style={{ width: 150 }}>{`${(item.quantity * item.price).toLocaleString()} KRW`}</td>
+          <td style={{ width: 150 }}>{`${Number(item.quantity).toLocaleString()}`}</td>
+          <td style={{ width: 150 }}>{`${Number(item.price).toLocaleString()} KRW`}</td>
+          <td style={{ width: 150 }}>{`${Number(item.quantity * item.price).toLocaleString()} KRW`}</td>
           <td style={{ width: 150 }}>
             {dayjs(
               `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
@@ -182,7 +182,7 @@ export default function Asset({}: Props) {
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가수익률</div>
-                <div>{`${Math.round(wallet?.yield * 100)} %`}</div>
+                <div>{`${Math.round(wallet?.yield * 100) / 100} %`}</div>
               </div>
             </div>
           </div>

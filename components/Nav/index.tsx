@@ -27,10 +27,10 @@ const Nav = (props: any) => {
   ];
 
   useEffect(() => {
+    console.log('authStore.jwt', authStore.jwt);
+    console.log('authStore.logged === true', authStore.logged);
     if (authStore.jwt && authStore.logged === true) {
       setIsUser(true);
-    } else {
-      setIsUser(false);
     }
   }, [router.pathname]);
 

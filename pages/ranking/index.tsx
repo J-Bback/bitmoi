@@ -1,44 +1,77 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '../../components/Table';
 import styles from '../ranking/Ranking.module.scss';
+import CallApi from '../../utils/callApi';
+
+type Ranking = {
+  assets: number;
+  name: string;
+  ranking: number;
+  userId: number;
+  yeild: number;
+};
+
+type UserWallet = {
+  avgPrice: number;
+  coinId: number;
+  createdAt: number[];
+  quantity: number;
+  updatedAt: number[];
+  userId: number;
+  waitingQty: number;
+  walletId: number;
+};
 
 const Ranking = () => {
-  const openWalletModal = () => {
-    console.log('modal 띄우기');
-  };
-  const tbodyData = () => {
-    const temp = [
-      {
-        rank: 1,
-        name: 'bitmoi',
-        asset: '1,000,000,000',
-        benefit: 375,
-        holdings: '확인',
-      },
-      {
-        rank: 2,
-        name: '워뇨띠',
-        asset: '100,000,000',
-        benefit: 122,
-        holdings: '확인',
-      },
-      {
-        rank: 3,
-        name: '해적왕루피',
-        asset: '10,000,000',
-        benefit: 99,
-        holdings: '확인',
-      },
-      {
-        rank: 4,
-        name: '냐옹이',
-        asset: '1,000,000',
-        benefit: 3,
-        holdings: '확인',
-      },
-    ];
+  const [rankingList, setRankingList] = useState<Array<Ranking>>([]);
+  const [userWallet, setUserWallet] = useState<Array<UserWallet>>([]);
 
-    return temp?.map((item: any, i: number) => {
+  useEffect(() => {
+    getRankingList();
+  }, []);
+
+  const getRankingList = async () => {
+    const data = {
+      disabledErrorHandler: true,
+      method: 'GET',
+      url: 'http://52.78.124.218:9000/user/ranking',
+    };
+
+    try {
+      const response: any = await CallApi(data);
+      const responseJson: any = await response.json();
+      if (response?.status === 200) {
+        setRankingList(responseJson);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUserWallet = async (userId: any) => {
+    const data = {
+      disabledErrorHandler: true,
+      method: 'GET',
+      url: `http://52.78.124.218:9000/user/asset/${userId}`,
+    };
+
+    try {
+      const response: any = await CallApi(data);
+      const responseJson: any = await response.json();
+      if (response?.status === 200) {
+        setUserWallet(responseJson);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openWalletModal = (userId: number) => {
+    getUserWallet(userId);
+  };
+
+  const tbodyData = () => {
+    return rankingList?.map((item: Ranking, i: number) => {
       return (
         <tr
           key={i}
@@ -49,13 +82,13 @@ const Ranking = () => {
             alignItems: 'center',
             backgroundColor: '#ffffff',
           }}>
-          <td style={{ width: 1200 / 5 }}>{item.rank}</td>
+          <td style={{ width: 1200 / 5 }}>{item.ranking}</td>
           <td style={{ width: 1200 / 5 }}>{item.name}</td>
-          <td style={{ width: 1200 / 5 }}>{item.asset}</td>
-          <td style={{ width: 1200 / 5 }}>{`${item.benefit}%`}</td>
+          <td style={{ width: 1200 / 5 }}>{item.assets.toLocaleString()}</td>
+          <td style={{ width: 1200 / 5 }}>{`${Math.round(item.yeild * 100) / 100} %`}</td>
           <td style={{ width: 1200 / 5, justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
-            <div className={styles.modal_button} onClick={() => openWalletModal()}>
-              {item.holdings}
+            <div className={styles.modal_button} onClick={() => openWalletModal(item.userId)}>
+              {'확인'}
             </div>
           </td>
         </tr>
