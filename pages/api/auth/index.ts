@@ -4,7 +4,7 @@ export default {
   login(params: any) {
     return CallApi({
       disabledErrorHandler: params.disabledErrorHandler,
-      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/login',
+      url: 'http://52.78.124.218:9000/user/login',
       method: 'POST',
       body: params,
     });
@@ -19,7 +19,7 @@ export default {
   signup(params: any) {
     return CallApi({
       // disabledErrorHandler: params.disabledErrorHandler,
-      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/join',
+      url: 'http://52.78.124.218:9000/user/join',
       method: 'POST',
       body: params.body,
     });

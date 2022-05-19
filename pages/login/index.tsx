@@ -43,7 +43,7 @@ const Login = () => {
 
   const loginFunction = async () => {
     const data = {
-      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/login',
+      url: 'http://52.78.124.218:9000/user/login',
       body: {
         email: email,
         password: password.current?.value.toString(),

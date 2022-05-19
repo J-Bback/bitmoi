@@ -135,7 +135,7 @@ const Exchange = (props: any) => {
       const chartIntervals = intervalParser(chartSelect);
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`,
+        url: `https://api.bithumb.com/public/candlestick/${orderCurrency}_${paymentCurrency}/${chartIntervals}`, // https://cors-anywhere.herokuapp.com/
       };
 
       const response: any = await CallApi(data);
@@ -168,7 +168,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`,
+        url: `https://api.bithumb.com/public/ticker/${orderCurrency}_${paymentCurrency}`, //https://cors-anywhere.herokuapp.com/
       };
 
       const response: any = await CallApi(data);
@@ -188,7 +188,7 @@ const Exchange = (props: any) => {
       const paymentCurrency = 'KRW';
       const data = {
         method: 'GET',
-        url: `https://cors-anywhere.herokuapp.com/https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`,
+        url: `https://api.bithumb.com/public/orderbook/${orderCurrency}_${paymentCurrency}`, //https://cors-anywhere.herokuapp.com/
       };
 
       const response: any = await CallApi(data);
@@ -204,7 +204,7 @@ const Exchange = (props: any) => {
   const orderBidOrAsk = async () => {
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
-      const url = 'https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/orders';
+      const url = 'http://52.78.124.218:9000/orders';
       const data = {
         method: 'POST',
         url: url,
@@ -228,7 +228,7 @@ const Exchange = (props: any) => {
 
   const cancelOrder = async (orderId: number) => {
     try {
-      const url = `https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/order/cancel/${orderId}`;
+      const url = `http://52.78.124.218:9000/order/cancel/${orderId}`;
       const data = {
         method: 'POST',
         url: url,
@@ -249,7 +249,7 @@ const Exchange = (props: any) => {
 
   const getOrderBookHistory = async () => {
     try {
-      const url = 'https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/orderbook';
+      const url = 'http://52.78.124.218:9000/orderbook';
       const data = {
         method: 'GET',
         url: url,
