@@ -88,7 +88,7 @@ const Exchange = (props: any) => {
   }, 100000);
   useEffect(() => {
     async function fetchAndSetOrderPrice() {
-      const data = await getTicker();
+      const data = currencyList;
       // const coinPrice = costComma(data[selectedCurrency]?.closing_price);
       const coinPrice = Number(data[selectedCurrency]?.closing_price);
       setOrderPrice(coinPrice);
@@ -204,7 +204,7 @@ const Exchange = (props: any) => {
   const orderBidOrAsk = async () => {
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
-      const url = 'https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/orders';
+      const url = 'http://52.78.124.218:9000/orders';
       const data = {
         method: 'POST',
         url: url,
@@ -228,7 +228,7 @@ const Exchange = (props: any) => {
 
   const cancelOrder = async (orderId: number) => {
     try {
-      const url = `https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/order/cancel/${orderId}`;
+      const url = `http://52.78.124.218:9000/order/cancel/${orderId}`;
       const data = {
         method: 'POST',
         url: url,
@@ -249,7 +249,7 @@ const Exchange = (props: any) => {
 
   const getOrderBookHistory = async () => {
     try {
-      const url = 'https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/orderbook';
+      const url = 'http://52.78.124.218:9000/orderbook';
       const data = {
         method: 'GET',
         url: url,

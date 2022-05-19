@@ -31,7 +31,7 @@ type Wallet = {
   holdings: number;
   krw: number;
   purchaseAmount: number;
-  valuationPL: number;
+  valuationPl: number;
   yield: number;
 };
 
@@ -40,7 +40,7 @@ const initialWallet = {
   holdings: 0,
   krw: 0,
   purchaseAmount: 0,
-  valuationPL: 0,
+  valuationPl: 0,
   yield: 0,
 };
 
@@ -80,7 +80,7 @@ export default function Asset({}: Props) {
     const data = {
       disabledErrorHandler: true,
       method: 'GET',
-      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/wallet',
+      url: 'http://52.78.124.218:9000/user/wallet',
     };
 
     try {
@@ -96,7 +96,7 @@ export default function Asset({}: Props) {
 
   const getOrderBookHistory = async () => {
     try {
-      const url = 'https://cors-anywhere.herokuapp.com/http://52.78.124.218:9000/orderbook';
+      const url = 'http://52.78.124.218:9000/orderbook';
       const data = {
         method: 'GET',
         url: url,
@@ -158,27 +158,27 @@ export default function Asset({}: Props) {
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>보유 KRW</div>
-                <div className={styles.asset_bold_text}>{`${wallet?.krw.toLocaleString()} KRW`}</div>
+                <div className={styles.asset_bold_text}>{`${wallet?.krw?.toLocaleString()} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 보유자산</div>
-                <div className={styles.asset_bold_text}>{`${wallet?.holdings.toLocaleString()} KRW`}</div>
+                <div className={styles.asset_bold_text}>{`${wallet?.holdings?.toLocaleString()} KRW`}</div>
               </div>
             </div>
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 매수금액</div>
-                <div>{`${wallet?.purchaseAmount.toLocaleString()} KRW`}</div>
+                <div>{`${wallet?.purchaseAmount?.toLocaleString()} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가금액</div>
-                <div>{`${wallet?.appraisalAmount.toLocaleString()} KRW`}</div>
+                <div>{`${wallet?.appraisalAmount?.toLocaleString()} KRW`}</div>
               </div>
             </div>
             <div className={styles.asset_box} style={{ color: '#000000' }}>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가손익</div>
-                <div>{`${wallet?.valuationPL.toLocaleString()} KRW`}</div>
+                <div>{`${Number(wallet?.valuationPl)?.toLocaleString()} KRW`}</div>
               </div>
               <div className={styles.asset_row} style={{ color: '#000000' }}>
                 <div>총 평가수익률</div>

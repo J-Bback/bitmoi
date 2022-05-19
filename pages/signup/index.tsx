@@ -47,7 +47,7 @@ const Login = () => {
       return alert('이메일 형식을 확인해주세요.');
     }
     const data = {
-      url: `https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/check`,
+      url: `http://52.78.124.218:9000/user/check`,
       method: 'POST',
       body: { email: email },
     };
@@ -68,7 +68,7 @@ const Login = () => {
 
   const signupFunction = async () => {
     const data = {
-      url: 'https://cors-anywhere.herokuapp.com/52.78.124.218:9000/user/join',
+      url: 'http://52.78.124.218:9000/user/join',
       body: {
         email: email,
         password: password.current.value,
@@ -167,7 +167,7 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
-      <form className={styles.login_wrap} onSubmit={(e: any) => signupValidation(e)}>
+      <div className={styles.login_wrap}>
         <div className={styles.title}>회원가입</div>
         <div className={styles.email_text}>E-mail</div>
         <div className={styles.email_wrap}>
@@ -215,7 +215,7 @@ const Login = () => {
             {'비밀번호 재설정'}
           </div> */}
         </div>
-      </form>
+      </div>
     </div>
   );
 };

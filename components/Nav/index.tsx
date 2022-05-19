@@ -22,8 +22,8 @@ const Nav = (props: any) => {
     { key: 'exchange', label: '거래소' },
     { key: 'ranking', label: '랭킹' },
     { key: 'asset', label: '보유자산' },
-    { key: 'subscription', label: '구독' },
-    { key: 'community', label: '커뮤니티' },
+    // { key: 'subscription', label: '구독' },
+    // { key: 'community', label: '커뮤니티' },
   ];
 
   useEffect(() => {
