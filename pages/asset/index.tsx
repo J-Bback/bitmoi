@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs';
-import * as isLeapYear from 'dayjs/plugin/isLeapYear';
 import 'dayjs/locale/zh-cn';
+import initializeStore from '../../stores';
 
-import { getCookie } from '../../utils/cookie';
 import { coinNameKR } from '../../constants/NameParser';
 
 import Table from '../../components/Table';
@@ -62,11 +61,12 @@ export default function Asset({}: Props) {
   const [wallet, setWallet] = useState<Wallet>(initialWallet);
 
   const router = useRouter();
-  const cookie = getCookie('token');
+  const store = initializeStore();
+  const { authStore } = store;
 
   useEffect(() => {
     // 로그인 상태가 아니면 로그인 화면
-    if (!cookie) {
+    if (authStore.logged === true) {
       router.push({
         pathname: '/login',
       });
