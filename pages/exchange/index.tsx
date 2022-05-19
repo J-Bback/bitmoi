@@ -72,16 +72,17 @@ type Transaction = {
 };
 
 const coinList = [
-  '비트코인',
-  '이더리움',
-  '라이트코인',
-  '이더리움클래식',
-  '리플',
-  '비트코인캐시',
-  '퀀텀',
-  '비트코인골드',
-  '이오스',
-  '아이콘',
+  { label: '비트코인', symbol: 'BTC', id: 0 },
+  { label: '이더리움', symbol: 'ETH', id: 0 },
+  { label: '라이트코인', symbol: 'LTC', id: 0 },
+  { label: '이더리움클래식', symbol: 'ETC', id: 0 },
+  { label: '리플', symbol: 'XRP', id: 0 },
+  { label: '비트코인캐시', symbol: 'BTC', id: 0 },
+  { label: '퀀텀', symbol: 'BTC', id: 0 },
+  { label: '비트코인골드', symbol: 'BTC', id: 0 },
+  { label: '이오스', symbol: 'BTC', id: 0 },
+  { label: '아이콘', symbol: 'BTC', id: 0 },
+  { label: '트론', symbol: 'BTC', id: 0 },
 ];
 
 const Exchange = (props: any) => {
@@ -238,6 +239,9 @@ const Exchange = (props: any) => {
   };
 
   const orderBidOrAsk = async () => {
+    const targetCoin = coinList.find((item) => item.symbol === selectedCurrency);
+    const coinId = targetCoin?.id || 0;
+    const orderState = orderType === 'market' ? 'execute' : 'wait';
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
       const url = 'http://52.78.124.218:9000/orders';
@@ -245,11 +249,11 @@ const Exchange = (props: any) => {
         method: 'POST',
         url: url,
         body: {
-          user_id: 23,
-          coin_id: 101, // selectedCoin : ex) 'BTC' 심볼과 id를 맞춰야한다.
+          coin_id: coinId, // selectedCoin : ex) 'BTC' 심볼과 id를 맞춰야한다.
           quantity: orderCount,
           price: orderPrice,
           types: type,
+          state: orderState,
         },
       };
       const response: any = await CallApi(data);
@@ -293,7 +297,6 @@ const Exchange = (props: any) => {
       const responseJson: any = await response.json();
       if (response.status === 200) {
         setOrderbookHistory(responseJson);
-        return getTransactionHistory(authStore?.userId);
       }
     } catch (error) {
       console.log(error);
@@ -546,8 +549,8 @@ const Exchange = (props: any) => {
             backgroundColor: '#F5FAFF',
           }}
           onClick={() => {
-            // setOrderPrice(Number(item.price).toLocaleString());
             setOrderPrice(Number(item.price));
+            setOrderCount(Number(item.quantity));
           }}>
           <td style={{ color: '#1F5ED2' }}>{`${Number(item?.price)?.toLocaleString()} KRW`}</td>
           <td>{item.quantity}</td>
@@ -582,19 +585,19 @@ const Exchange = (props: any) => {
     });
   };
   const orderTbodyData = () => {
-    console.log('orderbookHistory', orderbookHistory);
     return orderbookHistory?.map((item: OrderBookHistory, i: number) => {
       return (
         <tr
           key={i}
           style={{
             textAlign: 'center',
+            display: 'flex',
             height: '30px',
             alignItems: 'center',
             backgroundColor: bidOrAsk === '매수' ? '#FFF4F8' : '#F5FAFF',
           }}>
           {/* // 150, 60, 70, 135, 135, 135, 135, 80 */}
-          <td style={{ width: 150 }}>{coinList[item?.coinid]}</td>
+          <td style={{ width: 150 }}>{coinList[item?.coinid].label}</td>
           <td
             style={{
               color: item?.types === 'bid' ? '#D13C4B' : item?.types === 'ask' ? '#1F5ED2' : '#000000',
@@ -611,7 +614,9 @@ const Exchange = (props: any) => {
               `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
             ).format('YYYY-MM-DD HH:mm')}
           </td>
-          <td style={{ width: 80, cursor: 'pointer' }} onClick={() => cancelOrder(item.orderbookid)}>
+          <td
+            style={{ width: 80, cursor: 'pointer', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+            onClick={() => cancelOrder(item.orderbookid)}>
             <div className={styles.cancel_button}>{'주문취소'}</div>
           </td>
         </tr>
@@ -621,7 +626,7 @@ const Exchange = (props: any) => {
 
   const transactionTbodyData = () => {
     const data = transactionHistory;
-
+    // console.log('data', data);
     // return transactionHistory?.map((item: Transaction, i: number) => {
     //   return (
     //     <tr
@@ -873,6 +878,7 @@ const Exchange = (props: any) => {
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderPrice(e.target.value)}
                     type="number"
+                    value={orderPrice}
                   />
                 </div>
                 <div className={styles.selling_price_item_container}>
@@ -887,6 +893,7 @@ const Exchange = (props: any) => {
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderCount(e.target.value)}
                     type="number"
+                    value={orderCount}
                   />
                 </div>
                 <div className={styles.trans_hr} />

@@ -60,14 +60,15 @@ const Ranking = () => {
       const responseJson: any = await response.json();
       if (response?.status === 200) {
         setUserWallet(responseJson);
+        openWalletModal(responseJson);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const openWalletModal = (userId: number) => {
-    getUserWallet(userId);
+  const openWalletModal = (data: Array<UserWallet>) => {
+    console.log('userWallet DATA', data);
   };
 
   const tbodyData = () => {
@@ -87,7 +88,7 @@ const Ranking = () => {
           <td style={{ width: 1200 / 5 }}>{`${item.assets.toLocaleString()} KRW`}</td>
           <td style={{ width: 1200 / 5 }}>{`${Math.round(item.yeild * 100) / 100} %`}</td>
           <td style={{ width: 1200 / 5, justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
-            <div className={styles.modal_button} onClick={() => openWalletModal(item.userId)}>
+            <div className={styles.modal_button} onClick={() => getUserWallet(item.userId)}>
               {'확인'}
             </div>
           </td>
@@ -102,17 +103,78 @@ const Ranking = () => {
         <div className={styles.ranking_wrap}>
           <div className={styles.ranking}>
             <img src="/images/rank2.png" style={{ width: 50, height: 'auto' }} />
+            <div style={{ textAlign: 'right', marginTop: -40 }}>
+              <div style={{ padding: '10px 20px' }}>
+                <p style={{ fontWeight: 'bold', margin: 0 }}>
+                  {`${rankingList[1]?.name}`}
+                  <span style={{ fontSize: 13, fontWeight: 'normal' }}>님</span>
+                </p>
+                <div style={{ marginTop: 10 }}>
+                  <p style={{ margin: 0, fontSize: 12, color: '#979797' }}>총 자산</p>
+                  <p style={{ fontWeight: 'bold', margin: 0 }}>
+                    {rankingList[1]?.assets.toLocaleString()}
+                    <span style={{ fontSize: 12, color: '#979797' }}> KRW</span>
+                  </p>
+                </div>
+                <div style={{ marginTop: 10 }}>
+                  <p style={{ margin: 0, fontSize: 12, color: '#979797' }}>총 수익률</p>
+                  <p style={{ fontWeight: 'bold', margin: 0 }}>
+                    {Math.round(rankingList[1]?.yeild * 100) / 100}
+                    <span style={{ fontSize: 12, color: '#979797' }}> %</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <img src="/images/rankperson2.png" style={{ position: 'absolute', width: 220, bottom: 0, left: 0 }} />
           </div>
           <div className={styles.rank}>
             <img src="/images/rank1.png" style={{ width: 50, height: 'auto' }} />
-            <div style={{ marginTop: 10, fontSize: 20 }}>{`${rankingList[0]?.name} 님`}</div>
-            <div style={{ textAlign: 'center', marginTop: 20 }}>
-              <div>{`총 자산: ${rankingList[0]?.assets.toLocaleString()} KRW`}</div>
-              <div>{`총 수익률: ${Math.round(rankingList[0]?.yeild * 100) / 100} %`}</div>
+            <div style={{ padding: '10px 50px' }}>
+              <p style={{ fontWeight: 'bold', margin: 0 }}>
+                {`${rankingList[0]?.name}`}
+                <span style={{ fontSize: 13, fontWeight: 'normal' }}>님</span>
+              </p>
+              <div style={{ marginTop: 10 }}>
+                <p style={{ margin: 0, fontSize: 12, color: '#979797' }}>총 자산</p>
+                <p style={{ fontWeight: 'bold', margin: 0 }}>
+                  {rankingList[0]?.assets.toLocaleString()}
+                  <span style={{ fontSize: 12, color: '#979797' }}> KRW</span>
+                </p>
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <p style={{ margin: 0, fontSize: 12, color: '#979797' }}>총 수익률</p>
+                <p style={{ fontWeight: 'bold', margin: 0 }}>
+                  {Math.round(rankingList[0]?.yeild * 100) / 100}
+                  <span style={{ fontSize: 12, color: '#979797' }}> %</span>
+                </p>
+              </div>
             </div>
+
+            <img src="/images/rankperson1.png" style={{ position: 'absolute', width: 290, bottom: 0, right: -10 }} />
           </div>
           <div className={styles.ranking}>
             <img src="/images/rank3.png" style={{ width: 50, height: 'auto' }} />
+            <div style={{ padding: '0 50px', marginTop: -30 }}>
+              <p style={{ fontWeight: 'bold', margin: 0 }}>
+                {`${rankingList[2]?.name}`}
+                <span style={{ fontSize: 13, fontWeight: 'normal' }}>님</span>
+              </p>
+              <div style={{ marginTop: 10 }}>
+                <p style={{ margin: 0, fontSize: 12, color: '#979797' }}>총 자산</p>
+                <p style={{ fontWeight: 'bold', margin: 0 }}>
+                  {rankingList[2]?.assets.toLocaleString()}
+                  <span style={{ fontSize: 12, color: '#979797' }}> KRW</span>
+                </p>
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <p style={{ margin: 0, fontSize: 12, color: '#979797' }}>총 수익률</p>
+                <p style={{ fontWeight: 'bold', margin: 0 }}>
+                  {Math.round(rankingList[2]?.yeild * 100) / 100}
+                  <span style={{ fontSize: 12, color: '#979797' }}> %</span>
+                </p>
+              </div>
+            </div>
+            <img src="/images/rankperson3.png" style={{ position: 'absolute', width: 270, bottom: 0, right: -20 }} />
           </div>
         </div>
 

@@ -11,6 +11,7 @@
     @include align-items(center);
   }
   .ranking {
+      position:relative;
       flex:1;
       width:300px;
       height:200px;
@@ -18,10 +19,13 @@
       border-radius: 16px;
       background-color: #fff;
       display: inline-block;
+      padding:20px;
+      overflow: hidden;
       // margin-right:20px;
       // padding:20px;
   }
   .rank {
+      position:relative;
       flex:1.2;
       width:400px;
       height:250px;

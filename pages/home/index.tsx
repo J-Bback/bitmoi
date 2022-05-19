@@ -135,12 +135,13 @@ const Home = (props: any) => {
         {/* <div className={styles.introduce_wrap}> */}
         <div className={styles.hs_introduce_wrap}>
           {/* <div className={styles.introduce_title}>암호화폐 모의투자</div> */}
-          <div style={{ padding: 40 }}>
+          <div style={{ padding: 30 }}>
             <div>
-              <h2>암호화폐 모의투자</h2>
+              <h2 style={{ margin: 0 }}>암호화폐 모의투자</h2>
             </div>
-            <div className={styles.introduce_description} style={{ color: '#979797' }}>
-              BITMOI에서 실전처럼 암호화폐 투자를 체험해보세요! <br />
+            <div className={styles.introduce_description} style={{ color: '#979797', fontSize: 17 }}>
+              <span style={{ color: '#FB9310', fontWeight: 'bold' }}>BITMOI</span>에서 실전처럼 암호화폐 투자를
+              체험해보세요! <br />
               참가자들의 수익률 현황은 랭킹에서 확인하실 수 있습니다!
             </div>
             <div className={styles.introduce_button_wrap}>

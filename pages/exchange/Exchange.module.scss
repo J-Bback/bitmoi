@@ -214,7 +214,8 @@ color:#fff;
 
 .cancel_button {
   @include center_mid();
-  width: 60px;
+  @include justify-content(center);
+  width: 55px;
   height: 20px;
   border: 1px solid $main-color;
   border-radius: 3px;
