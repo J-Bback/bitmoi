@@ -27,7 +27,7 @@ const Nav = (props: any) => {
   ];
 
   useEffect(() => {
-    if (authStore.jwt && authStore.logged === true) {
+    if (authStore.logged === true) {
       setIsUser(true);
     }
   }, [router.pathname]);
@@ -71,7 +71,8 @@ const Nav = (props: any) => {
   };
 
   const goToLogout = () => {
-    removeCookie('token');
+    // removeCookie('token');
+    localStorage.removeItem('token');
     alert('로그아웃 되었습니다.');
     window.location.reload();
     return router.push(

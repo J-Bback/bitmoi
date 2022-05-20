@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
-import JsonWebToken from 'jsonwebtoken';
+// import Cookies from 'universal-cookie';
+// import JsonWebToken from 'jsonwebtoken';
 import { config } from 'process';
 
 type DataProps = {
@@ -21,8 +21,8 @@ type Options = {
 };
 
 const CallApi = async (data: DataProps) => {
-  const cookies = new Cookies();
-  const jwt = await cookies.get('token');
+  // const cookies = new Cookies();
+  const jwt = localStorage.getItem('token');
   const options: Options = {
     method: data.method,
     headers: {

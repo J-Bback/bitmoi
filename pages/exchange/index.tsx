@@ -344,35 +344,51 @@ const Exchange = (props: any) => {
 
   const onAddFavorites = (name: string, e: { stopPropagation: () => void }) => {
     e.stopPropagation();
-    const favorites = getCookie('favoriteCoins') || [];
+    // const favorites = getCookie('favoriteCoins') || [];
+    let favorites: any = localStorage.getItem('favoriteCoins');
+    if (favorites !== undefined && favorites !== null) {
+      favorites = JSON.parse(favorites);
+    } else favorites = [];
+
     if (favorites.length !== 0) {
       if (favorites?.includes(name)) {
         const filteredFavorites = favorites.filter((item: string) => item !== name);
 
-        setCookie('favoriteCoins', [...filteredFavorites], {
-          path: '/',
-          secure: true,
-          sameSite: 'none',
-        });
+        // setCookie('favoriteCoins', [...filteredFavorites], {
+        //   path: '/',
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        localStorage.setItem('favoriteCoins', JSON.stringify([...filteredFavorites]));
       } else {
-        setCookie('favoriteCoins', [...favorites, name], {
-          path: '/',
-          secure: true,
-          sameSite: 'none',
-        });
+        // setCookie('favoriteCoins', [...favorites, name], {
+        //   path: '/',
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        localStorage.setItem('favoriteCoins', JSON.stringify([...favorites, name]));
       }
     } else {
-      setCookie('favoriteCoins', [name], {
-        path: '/',
-        secure: true,
-        sameSite: 'none',
-      });
+      // setCookie('favoriteCoins', [name], {
+      //   path: '/',
+      //   secure: true,
+      //   sameSite: 'none',
+      // });
+      localStorage.setItem('favoriteCoins', JSON.stringify([name]));
     }
   };
 
   const tbodyData = () => {
     let keys = Object.keys(currencyList);
-    const favoriteCoins = getCookie('favoriteCoins') || [];
+    // const favoriteCoins = getCookie('favoriteCoins') || [];
+    if (typeof window !== 'undefined') {
+      let favoriteCoins: any = localStorage.getItem('favoriteCoins');
+      if (favoriteCoins !== undefined) {
+        favoriteCoins = JSON.parse(favoriteCoins);
+      } else {
+        favoriteCoins = [];
+      }
+
     if (query.tab === 'favorites') {
       keys = favoriteCoins;
     }
@@ -437,6 +453,7 @@ const Exchange = (props: any) => {
         </tr>
       );
     });
+  }
   };
 
   const renderTitle = () => {
@@ -824,6 +841,7 @@ const Exchange = (props: any) => {
                 <div className={styles.selling_price_item_container}>
                   <div className={styles.order_title}>주문가격</div>
                   <input
+                    aria-label='price'
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderPrice(e.target.value)}
                     type="number"
@@ -833,6 +851,7 @@ const Exchange = (props: any) => {
                 <div className={styles.selling_price_item_container}>
                   <div className={styles.order_title}>주문수량</div>
                   <input
+                    aria-label='quantity'
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderCount(e.target.value)}
                     type="number"

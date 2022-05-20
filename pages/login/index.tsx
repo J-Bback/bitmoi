@@ -38,13 +38,14 @@ const Login = () => {
   };
 
   async function login(serverCookie: any, callback: any, jwt: any) {
-    const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
-    setCookie('token', jwt, {
-      path: '/',
-      secure: true,
-      sameSite: 'none',
-    });
-
+    // const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
+    // setCookie('token', jwt, {
+    //   path: '/',
+    //   secure: true,
+    //   sameSite: 'none',
+    // });
+    localStorage.setItem('token', jwt);
+    
     if (jwt && callback) {
       await callback(jwt);
     }
