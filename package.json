@@ -8,7 +8,7 @@
     "build": "next build && next export",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "aws s3 sync ./out s3://bitmoi.com --profile=bitmoi",
+    "deploy": "aws s3 sync ./out s3://bitmoiapp.com --profile=bitmoi",
     "invalidate": "aws cloudfront create-invalidation —profile=bitmoi —distribution-id EMQ026WMPGSOX —paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },
   "dependencies": {
