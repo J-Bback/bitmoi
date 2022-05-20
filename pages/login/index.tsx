@@ -76,6 +76,7 @@ const Login = () => {
       // const responseJson: any = await response.json();
       const responseData: any = response?.data;
       if (response.status === 200) {
+        console.log('토큰확인', responseData?.accessToken);
         if (responseData?.accessToken === '존재하지 않은 회원입니다.') {
           return alert('이메일 또는 비밀번호가 맞지 않습니다.');
         }
