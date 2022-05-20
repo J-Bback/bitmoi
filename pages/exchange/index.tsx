@@ -259,7 +259,7 @@ const Exchange = (props: any) => {
           quantity: orderCount,
           price: orderPrice,
           types: type,
-          // state: orderState,
+          state: 'wait',
         },
       };
       const response: any = await CallApi(data);

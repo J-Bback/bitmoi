@@ -24,7 +24,7 @@ const CallApi = async (data: DataProps) => {
   // const cookies = new Cookies();
   let jwt;
   if (typeof window !== 'undefined') {
-    jwt = localStorage.getItem('token');
+    jwt = localStorage?.getItem('token');
   }
 
   const options: Options = {
