@@ -72,17 +72,17 @@ type Transaction = {
 };
 
 const coinList = [
-  { label: '비트코인', symbol: 'BTC', id: 0 },
-  { label: '이더리움', symbol: 'ETH', id: 0 },
-  { label: '라이트코인', symbol: 'LTC', id: 0 },
-  { label: '이더리움클래식', symbol: 'ETC', id: 0 },
-  { label: '리플', symbol: 'XRP', id: 0 },
-  { label: '비트코인캐시', symbol: 'BTC', id: 0 },
-  { label: '퀀텀', symbol: 'BTC', id: 0 },
-  { label: '비트코인골드', symbol: 'BTC', id: 0 },
-  { label: '이오스', symbol: 'BTC', id: 0 },
-  { label: '아이콘', symbol: 'BTC', id: 0 },
-  { label: '트론', symbol: 'BTC', id: 0 },
+  { label: '비트코인', symbol: 'BTC', id: 1 },
+  { label: '이더리움', symbol: 'ETH', id: 2 },
+  { label: '라이트코인', symbol: 'LTC', id: 3 },
+  { label: '이더리움클래식', symbol: 'ETC', id: 4 },
+  { label: '리플', symbol: 'XRP', id: 5 },
+  { label: '비트코인캐시', symbol: 'BCH', id: 6 },
+  { label: '퀀텀', symbol: 'QTUM', id: 7 },
+  { label: '비트코인골드', symbol: 'BTG', id: 8 },
+  { label: '이오스', symbol: 'EOS', id: 9 },
+  { label: '아이콘', symbol: 'ICX', id: 10 },
+  { label: '트론', symbol: 'TRX', id: 11 },
 ];
 
 const Exchange = (props: any) => {
@@ -109,13 +109,13 @@ const Exchange = (props: any) => {
 
   useInterval(() => {
     getData();
-  }, 3000);
+  }, 2000);
   useInterval(() => {
     getTicker();
-  }, 3000);
+  }, 2000);
   useInterval(() => {
     getOrderBook();
-  }, 3000);
+  }, 2000);
 
   useEffect(() => {
     getData();
@@ -142,7 +142,7 @@ const Exchange = (props: any) => {
     } else {
       getOrderBook(selectedCurrency);
     }
-  }, [selectedCurrency]);
+  }, []);
 
   useEffect(() => {
     if (authStore?.logged === true) {
@@ -213,7 +213,6 @@ const Exchange = (props: any) => {
       const responseJson: any = await response.json();
       if (response.status === 200) {
         setCurrencyList(responseJson.data);
-        return responseJson.data;
       }
     } catch (e) {
       console.log(e);
@@ -241,7 +240,8 @@ const Exchange = (props: any) => {
 
   const orderBidOrAsk = async () => {
     const targetCoin = coinList.find((item) => item.symbol === selectedCurrency);
-    const coinId = targetCoin?.id || 0;
+    console.log('targetCoin', targetCoin?.id);
+    const coinId = targetCoin?.id || 1;
     const orderState = orderType === 'market' ? 'execute' : 'wait';
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
@@ -250,7 +250,7 @@ const Exchange = (props: any) => {
         method: 'POST',
         url: url,
         body: {
-          coin_id: coinId, // selectedCoin : ex) 'BTC' 심볼과 id를 맞춰야한다.
+          coinid: coinId, // selectedCoin : ex) 'BTC' 심볼과 id를 맞춰야한다.
           quantity: orderCount,
           price: orderPrice,
           types: type,
@@ -369,26 +369,6 @@ const Exchange = (props: any) => {
       });
     }
   };
-
-  // const inputPriceFormat = (str: string) => {
-  //   const comma = (str: string) => {
-  //     str = String(str);
-  //     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
-  //   };
-  //   const uncomma = (str: string) => {
-  //     str = String(str);
-  //     return str.replace(/[^\d]+/g, '');
-  //   };
-  //   return comma(uncomma(str));
-  // };
-
-  // const inputPriceUncomma = (str: string) => {
-  //   const uncomma = (str: string) => {
-  //     str = String(str);
-  //     return str.replace(/[^\d]+/g, '');
-  //   };
-  //   return uncomma(str);
-  // };
 
   const tbodyData = () => {
     let keys = Object.keys(currencyList);
@@ -538,6 +518,7 @@ const Exchange = (props: any) => {
           }}
           onClick={() => {
             setOrderPrice(Number(item.price));
+            setOrderPrice(Number(item.quantity));
           }}>
           <td style={{ color: '#D13C4B' }}>{`${Number(item?.price)?.toLocaleString()} KRW`}</td>
           <td>{item.quantity}</td>
@@ -727,7 +708,7 @@ const Exchange = (props: any) => {
                 <Table
                   theadWidth={[120, 120]}
                   theadTextAlign={['center', 'center']}
-                  theadData={['매도 (KRW)', '수량 (BTC)']}
+                  theadData={['매도 (KRW)', `수량 (${selectedCurrency})`]}
                   tbodyData={tableOrderAskBody()}
                   emptyTable={{
                     text: '주문내역이 없습니다.',
@@ -747,7 +728,7 @@ const Exchange = (props: any) => {
                 <Table
                   theadWidth={[120, 120]}
                   theadTextAlign={['center', 'center']}
-                  theadData={['매수 (KRW)', '수량 (BTC)']}
+                  theadData={['매수 (KRW)', `수량 (${selectedCurrency})`]}
                   tbodyData={tableOrderBidBody()}
                   emptyTable={{
                     text: '정보를 불러오는 중입니다.',
@@ -885,7 +866,8 @@ const Exchange = (props: any) => {
             theadData={['종목', '구분', '상태', '주문량', '주문가격', '총 주문금액', '주문시각', '주문취소']}
             tbodyData={orderTbodyData()}
             emptyTable={{
-              text: authStore.logged === true ? '주문내역이 없습니다.' : '로그인이 필요합니다.',
+              // text: authStore.logged === true ? '주문내역이 없습니다.' : '로그인이 필요합니다.',
+              text: '주문내역이 없습니다.',
               style: {
                 fontSize: '13px',
                 textAlign: 'center',
@@ -906,7 +888,8 @@ const Exchange = (props: any) => {
             theadData={['종목', '구분', '체결량', '체결가격', '총 주문금액', '주문시각', '주문취소']}
             tbodyData={transactionTbodyData()}
             emptyTable={{
-              text: authStore.logged === true ? '체결내역이 없습니다.' : '로그인이 필요합니다.',
+              // text: authStore.logged === true ? '체결내역이 없습니다.' : '로그인이 필요합니다.',
+              text: '체결내역이 없습니다.',
               style: {
                 fontSize: '13px',
                 textAlign: 'center',
