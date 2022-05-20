@@ -93,29 +93,37 @@ const Home = (props: any) => {
 
   const onAddFavorites = (name: string, e: { stopPropagation: () => void }) => {
     e.stopPropagation();
-    const favorites = getCookie('favoriteCoins') || [];
+    // const favorites = getCookie('favoriteCoins') || [];
+    let favorites: any = localStorage.getItem('favoriteCoins');
+    if (favorites !== undefined && favorites !== null) {
+      favorites = JSON.parse(favorites);
+    } else favorites = [];
+
     if (favorites.length !== 0) {
       if (favorites?.includes(name)) {
         const filteredFavorites = favorites.filter((item: string) => item !== name);
 
-        setCookie('favoriteCoins', [...filteredFavorites], {
-          path: '/',
-          secure: true,
-          sameSite: 'none',
-        });
+        // setCookie('favoriteCoins', [...filteredFavorites], {
+        //   path: '/',
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        localStorage.setItem('favoriteCoins', JSON.stringify([...filteredFavorites]));
       } else {
-        setCookie('favoriteCoins', [...favorites, name], {
-          path: '/',
-          secure: true,
-          sameSite: 'none',
-        });
+        // setCookie('favoriteCoins', [...favorites, name], {
+        //   path: '/',
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        localStorage.setItem('favoriteCoins', JSON.stringify([...favorites, name]));
       }
     } else {
-      setCookie('favoriteCoins', [name], {
-        path: '/',
-        secure: true,
-        sameSite: 'none',
-      });
+      // setCookie('favoriteCoins', [name], {
+      //   path: '/',
+      //   secure: true,
+      //   sameSite: 'none',
+      // });
+      localStorage.setItem('favoriteCoins', JSON.stringify([name]));
     }
   };
 
@@ -185,7 +193,15 @@ const Home = (props: any) => {
 
   const tbodyData = () => {
     let keys = Object.keys(currencyList);
-    const favoriteCoins = getCookie('favoriteCoins') || [];
+    // const favoriteCoins = getCookie('favoriteCoins') || [];
+    if (typeof window !== 'undefined') {
+      let favoriteCoins: any = localStorage.getItem('favoriteCoins');
+      if (favoriteCoins !== undefined) {
+        favoriteCoins = JSON.parse(favoriteCoins);
+      } else {
+        favoriteCoins = [];
+      }
+
     if (query.tab === 'favorites') {
       keys = favoriteCoins;
     }
@@ -195,10 +211,10 @@ const Home = (props: any) => {
         (v: string) => v.includes(searchValue.toUpperCase()) || coinNameKR[v]?.includes(searchValue.toUpperCase())
       );
     }
-    if (Math.ceil(keys.length / 30) !== totalPage) {
-      setTotalPage(Math.ceil(keys.length / 30));
+    if (Math.ceil(keys?.length / 30) !== totalPage) {
+      setTotalPage(Math.ceil(keys?.length / 30));
     }
-    return keys.map((name: string, i: number) => {
+    return keys?.map((name: string, i: number) => {
       const currentPrice = currencyList[name]?.closing_price;
       const accTradeValue = currencyList[name]?.acc_trade_value_24H;
       const dayToDayFluctate = getDayToDayFluctate(name, 'krw');
@@ -242,7 +258,8 @@ const Home = (props: any) => {
         </tr>
       );
     });
-  };
+    }
+  }
 
   return (
     <div className={styles.container}>

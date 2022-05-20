@@ -13,10 +13,14 @@ import '../styles/globals.css';
 import '../styles/slider.css';
 
 async function login(serverCookie: any, callback: any) {
-  const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
-  const jwt = cookies.get('token');
-  if (jwt && callback) {
-    await callback(jwt);
+  // const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
+  const tokenFromLocalStorage = localStorage.getItem('token');
+  // const jwt = cookies.get('token');
+  // if (jwt && callback) {
+  //   await callback(jwt);
+  // }
+  if (tokenFromLocalStorage && callback) {
+    await callback(tokenFromLocalStorage);
   }
 }
 
