@@ -14,14 +14,16 @@ import '../styles/slider.css';
 
 async function login(serverCookie: any, callback: any) {
   // const cookies = serverCookie ? new Cookies(serverCookie) : new Cookies();
-  const tokenFromLocalStorage = localStorage.getItem('token');
+  if (typeof window !== 'undefined') {
+    const tokenFromLocalStorage = localStorage.getItem('token');
+    if (tokenFromLocalStorage && callback) {
+      await callback(tokenFromLocalStorage);
+    }
+  }
   // const jwt = cookies.get('token');
   // if (jwt && callback) {
   //   await callback(jwt);
   // }
-  if (tokenFromLocalStorage && callback) {
-    await callback(tokenFromLocalStorage);
-  }
 }
 
 // MyApp.getinitialProps = async (ctx: any) => {
