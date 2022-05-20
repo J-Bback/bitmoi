@@ -151,6 +151,12 @@ const Exchange = (props: any) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (orderType === 'market') {
+      setOrderPrice(currencyList[selectedCurrency].closing_price);
+    }
+  }, [orderType]);
+
   const intervalParser = (time: string) => {
     switch (time) {
       case '1분':
@@ -240,9 +246,8 @@ const Exchange = (props: any) => {
 
   const orderBidOrAsk = async () => {
     const targetCoin = coinList.find((item) => item.symbol === selectedCurrency);
-    console.log('targetCoin', targetCoin?.id);
     const coinId = targetCoin?.id || 1;
-    const orderState = orderType === 'market' ? 'execute' : 'wait';
+    // const orderState = orderType === 'market' ? 'execute' : 'wait';
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
       const url = 'http://52.78.124.218:9000/orders';
@@ -254,12 +259,17 @@ const Exchange = (props: any) => {
           quantity: orderCount,
           price: orderPrice,
           types: type,
-          state: orderState,
+          // state: orderState,
         },
       };
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
+        console.log('bid', bidOrAsk);
+        if (orderType === 'market') {
+          alert('주문 접수가 완료되었습니다.');
+        }
+        alert(`${bidOrAsk} 주문이 완료되었습니다.`);
         return getOrderBookHistory();
       } else if (response.status === 400) {
         return alert('로그인이 필요합니다.');
@@ -389,71 +399,71 @@ const Exchange = (props: any) => {
         favoriteCoins = [];
       }
 
-    if (query.tab === 'favorites') {
-      keys = favoriteCoins;
-    }
-
-    if (searchValue) {
-      keys = keys.filter(
-        (v: string) => v.includes(searchValue.toUpperCase()) || coinNameKR[v]?.includes(searchValue.toUpperCase())
-      );
-    }
-
-    return keys.map((name, i) => {
-      const currentPrice = currencyList[name].closing_price;
-      const fluctate = currencyList[name].fluctate_24H;
-      const fluctateRate = currencyList[name].fluctate_rate_24H;
-      const accTradeValue = currencyList[name].acc_trade_value_24H;
-      const nameKR: string = coinNameKR[name];
-      if (name === 'date') {
-        return;
+      if (query.tab === 'favorites') {
+        keys = favoriteCoins;
       }
 
-      return (
-        <tr
-          key={i}
-          style={{
-            cursor: 'pointer',
-            textAlign: 'right',
-            height: '48px',
-            wordBreak: 'break-all',
-            alignItems: 'center',
-            borderLeft: name === selectedCurrency ? '2px solid #979797' : '',
-          }}
-          onClick={() => {
-            name !== selectedCurrency && setSelectedCurrency(name);
-          }}>
-          <td style={{ width: '25px' }} onClick={(e) => onAddFavorites(name, e)}>
-            {favoriteCoins?.includes(name) ? (
-              <Image src="/images/star.png" alt="Favorite Image" width={14} height={14} />
-            ) : (
-              <Image src="/images/star_empty.png" alt="Favorite Empty Image" width={14} height={14} />
-            )}
-          </td>
-          <td style={{ width: '76px', textAlign: 'left' }}>
-            <div>{nameKR}</div>
-            <div>{`${name} / KRW`}</div>
-          </td>
-          <td style={{ width: '74px' }}>{costComma(currentPrice)}</td>
-          <td
-            style={
-              Math.sign(Number(fluctateRate)) === 1
-                ? { color: '#F75467', width: '71px' }
-                : Math.sign(Number(fluctateRate)) === 0
-                ? { color: '#282828', width: '71px' }
-                : { color: '#4386F9', width: '71px' }
-            }>
-            <span>{`${signPositiveNumber.signRatePositive(Number(fluctateRate))} %`}</span>
-            <br />
-            <span>{signPositiveNumber.signPricePositive(Number(fluctate))}</span>
-          </td>
-          <td style={{ width: '92px', paddingRight: '14px' }}>{`${costComma(
-            Math.round(Number(accTradeValue) / 1000000)
-          )} 백만`}</td>
-        </tr>
-      );
-    });
-  }
+      if (searchValue) {
+        keys = keys.filter(
+          (v: string) => v.includes(searchValue.toUpperCase()) || coinNameKR[v]?.includes(searchValue.toUpperCase())
+        );
+      }
+
+      return keys?.map((name, i) => {
+        const currentPrice = currencyList[name]?.closing_price;
+        const fluctate = currencyList[name]?.fluctate_24H;
+        const fluctateRate = currencyList[name]?.fluctate_rate_24H;
+        const accTradeValue = currencyList[name]?.acc_trade_value_24H;
+        const nameKR: string = coinNameKR[name];
+        if (name === 'date') {
+          return;
+        }
+
+        return (
+          <tr
+            key={i}
+            style={{
+              cursor: 'pointer',
+              textAlign: 'right',
+              height: '48px',
+              wordBreak: 'break-all',
+              alignItems: 'center',
+              borderLeft: name === selectedCurrency ? '2px solid #979797' : '',
+            }}
+            onClick={() => {
+              name !== selectedCurrency && setSelectedCurrency(name);
+            }}>
+            <td style={{ width: '25px' }} onClick={(e) => onAddFavorites(name, e)}>
+              {favoriteCoins?.includes(name) ? (
+                <Image src="/images/star.png" alt="Favorite Image" width={14} height={14} />
+              ) : (
+                <Image src="/images/star_empty.png" alt="Favorite Empty Image" width={14} height={14} />
+              )}
+            </td>
+            <td style={{ width: '76px', textAlign: 'left' }}>
+              <div>{nameKR}</div>
+              <div>{`${name} / KRW`}</div>
+            </td>
+            <td style={{ width: '74px' }}>{costComma(currentPrice)}</td>
+            <td
+              style={
+                Math.sign(Number(fluctateRate)) === 1
+                  ? { color: '#F75467', width: '71px' }
+                  : Math.sign(Number(fluctateRate)) === 0
+                  ? { color: '#282828', width: '71px' }
+                  : { color: '#4386F9', width: '71px' }
+              }>
+              <span>{`${signPositiveNumber.signRatePositive(Number(fluctateRate))} %`}</span>
+              <br />
+              <span>{signPositiveNumber.signPricePositive(Number(fluctate))}</span>
+            </td>
+            <td style={{ width: '92px', paddingRight: '14px' }}>{`${costComma(
+              Math.round(Number(accTradeValue) / 1000000)
+            )} 백만`}</td>
+          </tr>
+        );
+      });
+    }
   };
 
   const renderTitle = () => {
@@ -838,20 +848,22 @@ const Exchange = (props: any) => {
                     {`${0} ${bidOrAsk === '매수' ? 'KRW' : `${selectedCurrency}`}`}
                   </div>
                 </div>
-                <div className={styles.selling_price_item_container}>
-                  <div className={styles.order_title}>주문가격</div>
-                  <input
-                    aria-label='price'
-                    className={styles.selling_price_input}
-                    onChange={(e: any) => setOrderPrice(e.target.value)}
-                    type="number"
-                    value={orderPrice || 0}
-                  />
-                </div>
+                {orderType !== 'market' && (
+                  <div className={styles.selling_price_item_container}>
+                    <div className={styles.order_title}>주문가격</div>
+                    <input
+                      aria-label="price"
+                      className={styles.selling_price_input}
+                      onChange={(e: any) => setOrderPrice(e.target.value)}
+                      type="number"
+                      value={orderPrice || 0}
+                    />
+                  </div>
+                )}
                 <div className={styles.selling_price_item_container}>
                   <div className={styles.order_title}>주문수량</div>
                   <input
-                    aria-label='quantity'
+                    aria-label="quantity"
                     className={styles.selling_price_input}
                     onChange={(e: any) => setOrderCount(e.target.value)}
                     type="number"

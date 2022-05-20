@@ -9,7 +9,7 @@ type Props = {
   };
 };
 
-export default async function apiLogin(params: Props) {
+export default async function apiLogin(params: any) {
   try {
     const response = await axios.post(params.url, params.body, {
       headers: {

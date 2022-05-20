@@ -45,7 +45,7 @@ const Login = () => {
     //   sameSite: 'none',
     // });
     localStorage.setItem('token', jwt);
-    
+
     if (jwt && callback) {
       await callback(jwt);
     }
@@ -74,14 +74,13 @@ const Login = () => {
 
     try {
       const response: any = await apiLogin(data);
-      // const responseJson: any = await response.json();
       const responseData: any = response?.data;
       if (response.status === 200) {
-        console.log('토큰확인', responseData?.accessToken);
-        if (responseData?.accessToken === '존재하지 않은 회원입니다.') {
-          return alert('이메일 또는 비밀번호가 맞지 않습니다.');
+        console.log('토큰확인 responseData', responseData);
+        if (responseData?.status === 403) {
+          return alert('없는 회원정보 입니다.');
         }
-        if (!!responseData?.accessToken) {
+        if (responseData?.accessToken) {
           await login(null, authStore.login, responseData?.accessToken);
           goHome();
         }
