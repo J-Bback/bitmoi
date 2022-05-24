@@ -22,7 +22,11 @@ type Options = {
 
 const CallApi = async (data: DataProps) => {
   // const cookies = new Cookies();
-  const jwt = localStorage.getItem('token');
+  let jwt;
+  if (typeof window !== 'undefined') {
+    jwt = localStorage?.getItem('token');
+  }
+
   const options: Options = {
     method: data.method,
     headers: {
@@ -40,9 +44,7 @@ const CallApi = async (data: DataProps) => {
   }
 
   if (!data.url.includes('bithumb')) {
-    if (!!jwt) {
-      options.headers.Authorization = `${jwt}`;
-    }
+    options.headers.Authorization = `${localStorage.getItem('token')}`;
   }
   // const response = await axios.get(data.url, { headers: { options.header}})
 
