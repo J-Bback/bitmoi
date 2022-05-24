@@ -66,6 +66,7 @@ const Login = () => {
   const loginFunction = async () => {
     const data = {
       url: 'http://52.78.124.218:9000/user/login',
+      method: 'POST',
       body: {
         email: email,
         password: password.current?.value.toString(),
@@ -76,7 +77,6 @@ const Login = () => {
       const response: any = await apiLogin(data);
       const responseData: any = response?.data;
       if (response.status === 200) {
-        console.log('토큰확인 responseData', responseData);
         if (responseData?.status === 403) {
           return alert('없는 회원정보 입니다.');
         }

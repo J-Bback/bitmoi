@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs';
@@ -85,13 +85,14 @@ const coinList = [
   { label: '트론', symbol: 'TRX', id: 11 },
 ];
 
+const chartList: string[] = ['1분', '10분', '1시간', '6시간', '24시간'];
+
 const Exchange = (props: any) => {
   const [series, setSeries] = useState<any>([]);
   const [barSeries, setBarSeries] = useState<Array<BarData>>([]);
   const [currencyList, setCurrencyList] = useState<any>({});
   const [searchValue, setSearchValue] = useState<string>('');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('BTC');
-  const [chartList, setChartList] = useState<any>(['1분', '10분', '1시간', '6시간']);
   const [chartSelect, setChartSelect] = useState<string>('1시간');
   const [orderbook, setOrderbook] = useState<OrderBook>();
   const [orderType, setOrderType] = useState<string>('pending');
@@ -167,6 +168,8 @@ const Exchange = (props: any) => {
         return '1h';
       case '6시간':
         return '6h';
+      case '24시간':
+        return '24h';
       default:
         break;
     }
@@ -265,7 +268,6 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('bid', bidOrAsk);
         if (orderType === 'market') {
           alert('주문 접수가 완료되었습니다.');
         }
@@ -328,7 +330,6 @@ const Exchange = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        console.log('transaction responseJson', responseJson);
         setTransactionHistory(responseJson);
       }
     } catch (error) {
@@ -466,38 +467,6 @@ const Exchange = (props: any) => {
     }
   };
 
-  const renderTitle = () => {
-    const nameKR: string = coinNameKR[selectedCurrency];
-    return (
-      <div className={styles.title_wrap}>
-        <div className={styles.title}>{nameKR}</div>
-        <div style={{ color: '#979797', marginBottom: 4 }}>{selectedCurrency} / KRW</div>
-      </div>
-    );
-  };
-
-  const renderChartHeader = () => {
-    return (
-      <div className={styles.header_bar_wrap}>
-        <div className={styles.property}>{'자산'}</div>
-        <div>
-          <span className={styles.property}>
-            {`${selectedCurrency}`} <span>사용가능</span> <span className={styles.color_b}>0.00000000</span> /{' '}
-            <span>사용중</span> <span className={styles.color_b}>0.00000000 </span>
-          </span>
-          <span className={styles.address_link_style}>{` ${selectedCurrency} 입금`}</span>
-        </div>
-        <div>
-          <span className={styles.property}>
-            {`${selectedCurrency}`} <span>사용가능</span> <span className={styles.color_b}>0.00000000</span> /{' '}
-            <span>사용중</span> <span className={styles.color_b}>0.00000000 </span>
-          </span>
-          <span className={styles.address_link_style}>{`KRW 입금`}</span>
-        </div>
-      </div>
-    );
-  };
-
   const tableOrderAskBody = () => {
     const askArray = orderbook?.asks.sort((a, b) => {
       if (a.price < b.price) return 1;
@@ -582,11 +551,15 @@ const Exchange = (props: any) => {
               `${item.createdat[0]}-${item.createdat[1]}-${item.createdat[2]} ${item.createdat[3]}:${item.createdat[4]}`
             ).format('YYYY-MM-DD HH:mm')}
           </td>
-          <td
-            style={{ width: 80, cursor: 'pointer', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
-            onClick={() => cancelOrder(item.orderbookid)}>
-            <div className={styles.cancel_button}>{'주문취소'}</div>
-          </td>
+          {item?.state !== 'wait' && item?.state !== 'cancel' ? (
+            <div style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', flex: 1 }}>체결</div>
+          ) : (
+            <td
+              style={{ width: 80, cursor: 'pointer', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+              onClick={() => cancelOrder(item.orderbookid)}>
+              <div className={styles.cancel_button}>{'주문취소'}</div>
+            </td>
+          )}
         </tr>
       );
     });
@@ -628,312 +601,381 @@ const Exchange = (props: any) => {
     });
   };
 
-  return (
-    <main className={styles.exchange_wrap}>
-      <div className={styles.container}>
-        <section className={styles.side_bar_wrap}>
-          <Input
-            image={true}
-            type="text"
-            placeholder="검색"
-            className={styles.input_style}
-            maxLength={12}
-            handleChange={(value: string) => handleChange(value)}
-            propValue={searchValue}
-            clearButton="on"
+  const renderSideCoinList = () => {
+    return (
+      <Fragment>
+        <Input
+          image={true}
+          type="text"
+          placeholder="검색"
+          className={styles.input_style}
+          maxLength={12}
+          handleChange={(value: string) => handleChange(value)}
+          propValue={searchValue}
+          clearButton="on"
+        />
+        <Tab
+          tabs={{
+            tabItems: [
+              {
+                key: 'krw',
+                label: '원화마켓',
+                onClick: () => moveTab('krw'),
+              },
+              {
+                key: 'favorites',
+                label: '즐겨찾기',
+                onClick: () => moveTab('favorites'),
+              },
+            ],
+            selectedTab: query.tab,
+          }}
+          contentsStyle={{
+            width: '340px',
+            borderLeft: '1px solid #eeeeee',
+            borderRight: '1px solid #eeeeee',
+          }}
+        />
+        {query.tab === 'krw' && (
+          <Table
+            theadWidth={[101, 74, 71, 92]}
+            theadTextAlign={['left', 'right', 'right', 'right']}
+            theadPadding={['0 0 0 25px', '0', '0', '0 14px 0 0']}
+            theadData={['자산', '현재가', '변동률(당일)', '거래금액(24H)']}
+            tbodyData={tbodyData()}
+            emptyTable={{
+              text: '검색된 가상자산이 없습니다',
+              style: {
+                fontSize: '13px',
+                textAlign: 'center',
+                paddingTop: '20px',
+              },
+            }}
+            tableStyle={{
+              width: '100%',
+              maxHeight: '1073px',
+              fontSize: '12px',
+              color: '#232323',
+            }}
+            tbodyStyle={{ height: '1515px', overflowY: 'auto' }}
+          />
+        )}
+        {query.tab === 'favorites' && (
+          <Table
+            theadWidth={[101, 74, 71, 92]}
+            theadTextAlign={['left', 'right', 'right', 'right']}
+            theadPadding={['0 0 0 25px', '0', '0', '0 14px 0 0']}
+            theadData={['자산', '현재가', '변동률(당일)', '거래금액(24H)']}
+            tbodyData={tbodyData()}
+            emptyTable={{
+              text: '검색된 가상자산이 없습니다',
+              style: {
+                fontSize: '13px',
+                textAlign: 'center',
+                height: '50px',
+                padding: '20px',
+              },
+            }}
+            tableStyle={{
+              width: '100%',
+              maxHeight: '1073px',
+              fontSize: '12px',
+              color: '#232323',
+            }}
+            tbodyStyle={{ height: '985px', overflowY: 'auto' }}
+          />
+        )}
+      </Fragment>
+    );
+  };
+
+  const renderTitle = () => {
+    const nameKR: string = coinNameKR[selectedCurrency];
+    return (
+      <div className={styles.title_wrap}>
+        <div className={styles.title}>{nameKR}</div>
+        <div style={{ color: '#979797', marginBottom: 4 }}>{selectedCurrency} / KRW</div>
+      </div>
+    );
+  };
+
+  const renderChartHeader = () => {
+    return (
+      <div className={styles.header_bar_wrap}>
+        <div className={styles.property}>{'자산'}</div>
+        <div>
+          <span className={styles.property}>
+            {`${selectedCurrency}`} <span>사용가능</span> <span className={styles.color_b}>0.00000000</span> /{' '}
+            <span>사용중</span> <span className={styles.color_b}>0.00000000 </span>
+          </span>
+          <span className={styles.address_link_style}>{` ${selectedCurrency} 입금`}</span>
+        </div>
+        <div>
+          <span className={styles.property}>
+            {`${selectedCurrency}`} <span>사용가능</span> <span className={styles.color_b}>0.00000000</span> /{' '}
+            <span>사용중</span> <span className={styles.color_b}>0.00000000 </span>
+          </span>
+          <span className={styles.address_link_style}>{`KRW 입금`}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderChartList = () => {
+    return chartList.map((el: string, i: number) => (
+      <div
+        key={i}
+        onClick={() => setChartSelect(el)}
+        className={el === chartSelect ? styles.chart_selected : styles.chart_unselected}>
+        {el}
+      </div>
+    ));
+  };
+
+  const renderOrderBook = () => {
+    return (
+      <div>
+        <Table
+          theadWidth={[120, 120]}
+          theadTextAlign={['center', 'center']}
+          theadData={['매도 (KRW)', `수량 (${selectedCurrency})`]}
+          tbodyData={tableOrderAskBody()}
+          emptyTable={{
+            text: '주문내역이 없습니다.',
+            style: {
+              fontSize: '13px',
+              textAlign: 'center',
+              paddingTop: '20px',
+            },
+          }}
+          tableStyle={{
+            width: '100%',
+            fontSize: '12px',
+            color: '#232323',
+          }}
+          tbodyStyle={{ height: '200px', overflowY: 'auto' }}
+        />
+        <Table
+          theadWidth={[120, 120]}
+          theadTextAlign={['center', 'center']}
+          theadData={['매수 (KRW)', `수량 (${selectedCurrency})`]}
+          tbodyData={tableOrderBidBody()}
+          emptyTable={{
+            text: '정보를 불러오는 중입니다.',
+            style: {
+              fontSize: '13px',
+              textAlign: 'center',
+              paddingTop: '20px',
+            },
+          }}
+          tableStyle={{
+            width: '100%',
+            fontSize: '12px',
+            color: '#232323',
+          }}
+          tbodyStyle={{ height: '200px', overflowY: 'auto' }}
+        />
+      </div>
+    );
+  };
+
+  const renderOrderArea = () => {
+    return (
+      <div>
+        <div style={{ width: '100%', marginBottom: 20 }}>
+          <Tab
+            tabs={{
+              tabItems: [
+                {
+                  key: 'pending',
+                  label: '지정가',
+                  onClick: () => setOrderType('pending'),
+                },
+                {
+                  key: 'market',
+                  label: '시장가',
+                  onClick: () => setOrderType('market'),
+                },
+              ],
+              selectedTab: orderType,
+            }}
+            contentsStyle={{
+              width: '391px',
+              height: '35px',
+              backgroundColor: '#FB9310',
+            }}
+            tabStyle={{
+              backgroundColor: '#eeeeee',
+              color: '#000000',
+            }}
+            selectedTabStyle={{
+              backgroundColor: '#ffffff',
+              color: '#000000',
+              border: '2.5px solid #000000',
+            }}
           />
           <Tab
             tabs={{
               tabItems: [
                 {
-                  key: 'krw',
-                  label: '원화마켓',
-                  onClick: () => moveTab('krw'),
+                  key: '매수',
+                  label: `${selectedCurrency} 매수`,
+                  onClick: () => setBidOrAsk('매수'),
                 },
                 {
-                  key: 'favorites',
-                  label: '즐겨찾기',
-                  onClick: () => moveTab('favorites'),
+                  key: '매도',
+                  label: `${selectedCurrency} 매도`,
+                  onClick: () => setBidOrAsk('매도'),
                 },
               ],
-              selectedTab: query.tab,
+              selectedTab: bidOrAsk,
             }}
             contentsStyle={{
-              width: '340px',
-              borderLeft: '1px solid #eeeeee',
-              borderRight: '1px solid #eeeeee',
+              width: '391px',
+              height: '35px',
+              backgroundColor: '#eeeeee',
+              marginTop: '10px',
+            }}
+            tabStyle={{
+              color: '#000000',
+            }}
+            selectedTabStyle={{
+              backgroundColor: '#ffffff',
+              color: '#FB9310',
+              border: '2.5px solid #FB9310',
             }}
           />
-          {query.tab === 'krw' && (
-            <Table
-              theadWidth={[101, 74, 71, 92]}
-              theadTextAlign={['left', 'right', 'right', 'right']}
-              theadPadding={['0 0 0 25px', '0', '0', '0 14px 0 0']}
-              theadData={['자산', '현재가', '변동률(당일)', '거래금액(24H)']}
-              tbodyData={tbodyData()}
-              emptyTable={{
-                text: '검색된 가상자산이 없습니다',
-                style: {
-                  fontSize: '13px',
-                  textAlign: 'center',
-                  paddingTop: '20px',
-                },
-              }}
-              tableStyle={{
-                width: '100%',
-                maxHeight: '1073px',
-                fontSize: '12px',
-                color: '#232323',
-              }}
-              tbodyStyle={{ height: '1500px', overflowY: 'auto' }}
+        </div>
+
+        <div className={styles.selling_price_item_container}>
+          <div className={styles.order_title}>주문가능</div>
+          <div className={styles.order_text}>{`${0} ${bidOrAsk === '매수' ? 'KRW' : `${selectedCurrency}`}`}</div>
+        </div>
+        {orderType !== 'market' && (
+          <div className={styles.selling_price_item_container}>
+            <div className={styles.order_title}>주문가격</div>
+            <input
+              aria-label="price"
+              className={styles.selling_price_input}
+              onChange={(e: any) => setOrderPrice(e.target.value)}
+              type="number"
+              value={orderPrice || 0}
             />
-          )}
-          {query.tab === 'favorites' && (
-            <Table
-              theadWidth={[101, 74, 71, 92]}
-              theadTextAlign={['left', 'right', 'right', 'right']}
-              theadPadding={['0 0 0 25px', '0', '0', '0 14px 0 0']}
-              theadData={['자산', '현재가', '변동률(당일)', '거래금액(24H)']}
-              tbodyData={tbodyData()}
-              emptyTable={{
-                text: '검색된 가상자산이 없습니다',
-                style: {
-                  fontSize: '13px',
-                  textAlign: 'center',
-                  height: '50px',
-                  padding: '20px',
-                },
-              }}
-              tableStyle={{
-                width: '100%',
-                maxHeight: '1073px',
-                fontSize: '12px',
-                color: '#232323',
-              }}
-              tbodyStyle={{ height: '975px', overflowY: 'auto' }}
-            />
-          )}
-        </section>
+          </div>
+        )}
+        <div className={styles.selling_price_item_container}>
+          <div className={styles.order_title}>주문수량</div>
+          <input
+            aria-label="quantity"
+            className={styles.selling_price_input}
+            onChange={(e: any) => setOrderCount(e.target.value)}
+            type="number"
+            value={orderCount || 0}
+          />
+        </div>
+        <div className={styles.trans_hr} />
+        <div className={styles.selling_price_item_container}>
+          <div className={styles.order_title}>주문금액</div>
+          <div className={styles.order_text}>
+            {orderType === 'market' && <span>&#8776;&nbsp;</span>}
+            {` ${(orderPrice && orderCount && (orderPrice * orderCount)?.toLocaleString()) || '0'} KRW`}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderOrderButton = () => {
+    return (
+      <Button
+        id={`${bidOrAsk}`}
+        className={styles.order_button}
+        btnText={`${bidOrAsk}주문`}
+        inlineStyle={{
+          backgroundColor: bidOrAsk === '매수' ? '#F75467' : '#4386F9',
+        }}
+        btnClick={() => orderBidOrAsk()}
+      />
+    );
+  };
+
+  const renderMyOrderHistory = () => {
+    return (
+      <Fragment>
+        <div className={styles.history_title}>{`나의 주문내역 (총 ${orderbookHistory.length}건)`}</div>
+        <Table
+          theadWidth={[150, 60, 70, 135, 135, 135, 135, 80]}
+          theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center', 'center']}
+          theadData={['종목', '구분', '상태', '주문량', '주문가격', '총 주문금액', '주문시각', '주문취소']}
+          tbodyData={orderTbodyData()}
+          emptyTable={{
+            // text: authStore.logged === true ? '주문내역이 없습니다.' : '로그인이 필요합니다.',
+            text: '주문내역이 없습니다.',
+            style: {
+              fontSize: '13px',
+              textAlign: 'center',
+              paddingTop: '20px',
+            },
+          }}
+          tableStyle={{
+            width: '100%',
+            fontSize: '12px',
+            color: '#232323',
+          }}
+          tbodyStyle={{ height: '200px', overflowY: 'auto' }}
+        />
+      </Fragment>
+    );
+  };
+
+  const renderMyTransactionHistory = () => {
+    return (
+      <Fragment>
+        <div className={styles.history_title}>{`나의 체결내역 (총 ${transactionHistory?.length}건)`}</div>
+        <Table
+          theadWidth={[100, 100, 150, 150, 150, 150, 100]}
+          theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center']}
+          theadData={['종목', '구분', '체결량', '체결가격', '총 주문금액', '주문시각', '주문취소']}
+          tbodyData={transactionTbodyData()}
+          emptyTable={{
+            // text: authStore.logged === true ? '체결내역이 없습니다.' : '로그인이 필요합니다.',
+            text: '체결내역이 없습니다.',
+            style: {
+              fontSize: '13px',
+              textAlign: 'center',
+              paddingTop: '20px',
+            },
+          }}
+          tableStyle={{
+            width: '100%',
+            fontSize: '12px',
+            color: '#232323',
+          }}
+          tbodyStyle={{ height: '200px', overflowY: 'auto' }}
+        />
+      </Fragment>
+    );
+  };
+
+  return (
+    <main className={styles.exchange_wrap}>
+      <div className={styles.container}>
+        <section className={styles.side_bar_wrap}>{renderSideCoinList()}</section>
         <section className={styles.ticker_wrap}>
           {renderTitle()}
           {renderChartHeader()}
-
-          <div className={styles.chart_select_bar}>
-            {chartList.map((el: string, i: number) => (
-              <div
-                key={i}
-                onClick={() => setChartSelect(el)}
-                className={el === chartSelect ? styles.chart_selected : styles.chart_unselected}>
-                {el}
-              </div>
-            ))}
-          </div>
+          <div className={styles.chart_select_bar}>{renderChartList()}</div>
           <ApexChart series={series} barSeries={barSeries} />
           <div className={styles.transaction_and_order_wrap}>
-            <section style={{ flex: 2 }}>
-              <div>
-                <Table
-                  theadWidth={[120, 120]}
-                  theadTextAlign={['center', 'center']}
-                  theadData={['매도 (KRW)', `수량 (${selectedCurrency})`]}
-                  tbodyData={tableOrderAskBody()}
-                  emptyTable={{
-                    text: '주문내역이 없습니다.',
-                    style: {
-                      fontSize: '13px',
-                      textAlign: 'center',
-                      paddingTop: '20px',
-                    },
-                  }}
-                  tableStyle={{
-                    width: '100%',
-                    fontSize: '12px',
-                    color: '#232323',
-                  }}
-                  tbodyStyle={{ height: '200px', overflowY: 'auto' }}
-                />
-                <Table
-                  theadWidth={[120, 120]}
-                  theadTextAlign={['center', 'center']}
-                  theadData={['매수 (KRW)', `수량 (${selectedCurrency})`]}
-                  tbodyData={tableOrderBidBody()}
-                  emptyTable={{
-                    text: '정보를 불러오는 중입니다.',
-                    style: {
-                      fontSize: '13px',
-                      textAlign: 'center',
-                      paddingTop: '20px',
-                    },
-                  }}
-                  tableStyle={{
-                    width: '100%',
-                    fontSize: '12px',
-                    color: '#232323',
-                  }}
-                  tbodyStyle={{ height: '200px', overflowY: 'auto' }}
-                />
-              </div>
-            </section>
+            <section style={{ flex: 2 }}>{renderOrderBook()}</section>
             <div style={{ flex: 0.5 }}></div>
             <section className={styles.order_wrap}>
-              <div>
-                <div style={{ width: '100%', marginBottom: 20 }}>
-                  <Tab
-                    tabs={{
-                      tabItems: [
-                        {
-                          key: 'pending',
-                          label: '지정가',
-                          onClick: () => setOrderType('pending'),
-                        },
-                        {
-                          key: 'market',
-                          label: '시장가',
-                          onClick: () => setOrderType('market'),
-                        },
-                      ],
-                      selectedTab: orderType,
-                    }}
-                    contentsStyle={{
-                      width: '391px',
-                      height: '35px',
-                      backgroundColor: '#FB9310',
-                    }}
-                    tabStyle={{
-                      backgroundColor: '#eeeeee',
-                      color: '#000000',
-                    }}
-                    selectedTabStyle={{
-                      backgroundColor: '#ffffff',
-                      color: '#000000',
-                      border: '2.5px solid #000000',
-                    }}
-                  />
-                  <Tab
-                    tabs={{
-                      tabItems: [
-                        {
-                          key: '매수',
-                          label: `${selectedCurrency} 매수`,
-                          onClick: () => setBidOrAsk('매수'),
-                        },
-                        {
-                          key: '매도',
-                          label: `${selectedCurrency} 매도`,
-                          onClick: () => setBidOrAsk('매도'),
-                        },
-                      ],
-                      selectedTab: bidOrAsk,
-                    }}
-                    contentsStyle={{
-                      width: '391px',
-                      height: '35px',
-                      backgroundColor: '#eeeeee',
-                      marginTop: '10px',
-                    }}
-                    tabStyle={{
-                      color: '#000000',
-                    }}
-                    selectedTabStyle={{
-                      backgroundColor: '#ffffff',
-                      color: '#FB9310',
-                      border: '2.5px solid #FB9310',
-                    }}
-                  />
-                </div>
-
-                <div className={styles.selling_price_item_container}>
-                  <div className={styles.order_title}>주문가능</div>
-                  <div className={styles.order_text}>
-                    {`${0} ${bidOrAsk === '매수' ? 'KRW' : `${selectedCurrency}`}`}
-                  </div>
-                </div>
-                {orderType !== 'market' && (
-                  <div className={styles.selling_price_item_container}>
-                    <div className={styles.order_title}>주문가격</div>
-                    <input
-                      aria-label="price"
-                      className={styles.selling_price_input}
-                      onChange={(e: any) => setOrderPrice(e.target.value)}
-                      type="number"
-                      value={orderPrice || 0}
-                    />
-                  </div>
-                )}
-                <div className={styles.selling_price_item_container}>
-                  <div className={styles.order_title}>주문수량</div>
-                  <input
-                    aria-label="quantity"
-                    className={styles.selling_price_input}
-                    onChange={(e: any) => setOrderCount(e.target.value)}
-                    type="number"
-                    value={orderCount || 0}
-                  />
-                </div>
-                <div className={styles.trans_hr} />
-                <div className={styles.selling_price_item_container}>
-                  <div className={styles.order_title}>주문금액</div>
-                  <div className={styles.order_text}>
-                    {`${(orderPrice && orderCount && (orderPrice * orderCount)?.toLocaleString()) || '0'} KRW`}
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                id={`${bidOrAsk}`}
-                className={styles.order_button}
-                btnText={`${bidOrAsk}주문`}
-                inlineStyle={{
-                  backgroundColor: bidOrAsk === '매수' ? '#F75467' : '#4386F9',
-                }}
-                btnClick={() => orderBidOrAsk()}
-              />
+              {renderOrderArea()}
+              {renderOrderButton()}
             </section>
           </div>
-          <div className={styles.history_title}>{`나의 주문내역 (총 ${orderbookHistory.length}건)`}</div>
-          <Table
-            theadWidth={[150, 60, 70, 135, 135, 135, 135, 80]}
-            theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center', 'center']}
-            theadData={['종목', '구분', '상태', '주문량', '주문가격', '총 주문금액', '주문시각', '주문취소']}
-            tbodyData={orderTbodyData()}
-            emptyTable={{
-              // text: authStore.logged === true ? '주문내역이 없습니다.' : '로그인이 필요합니다.',
-              text: '주문내역이 없습니다.',
-              style: {
-                fontSize: '13px',
-                textAlign: 'center',
-                paddingTop: '20px',
-              },
-            }}
-            tableStyle={{
-              width: '100%',
-              fontSize: '12px',
-              color: '#232323',
-            }}
-            tbodyStyle={{ height: '200px', overflowY: 'auto' }}
-          />
-          <div className={styles.history_title}>{`나의 체결내역 (총 ${transactionHistory?.length}건)`}</div>
-          <Table
-            theadWidth={[100, 100, 150, 150, 150, 150, 100]}
-            theadTextAlign={['center', 'center', 'center', 'center', 'center', 'center', 'center']}
-            theadData={['종목', '구분', '체결량', '체결가격', '총 주문금액', '주문시각', '주문취소']}
-            tbodyData={transactionTbodyData()}
-            emptyTable={{
-              // text: authStore.logged === true ? '체결내역이 없습니다.' : '로그인이 필요합니다.',
-              text: '체결내역이 없습니다.',
-              style: {
-                fontSize: '13px',
-                textAlign: 'center',
-                paddingTop: '20px',
-              },
-            }}
-            tableStyle={{
-              width: '100%',
-              fontSize: '12px',
-              color: '#232323',
-            }}
-            tbodyStyle={{ height: '200px', overflowY: 'auto' }}
-          />
+          {renderMyOrderHistory()}
+          {renderMyTransactionHistory()}
         </section>
       </div>
     </main>
