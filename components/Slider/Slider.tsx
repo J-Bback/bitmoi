@@ -13,7 +13,7 @@ function useWindowSize() {
   return size;
 }
 
-function useInterval(callback: any, delay: any) {
+function useInterval(callback: any, delay: number | null) {
   const savedCallback = useRef<any>();
   useEffect(() => {
     savedCallback.current = callback;
@@ -85,7 +85,7 @@ export const Slider = () => {
     () => {
       handleSlide(currentIndex + 1);
     },
-    !isSwiping && !prevSlideX ? 2000 : null
+    !isSwiping && !prevSlideX ? 3000 : null
   );
 
   function replaceSlide(index: any) {

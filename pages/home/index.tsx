@@ -8,10 +8,8 @@ import { setCookie, getCookie } from '../../utils/cookie';
 import costComma from '../../helpers/costComma';
 import signPositiveNumber from '../../helpers/signPositiveNumber';
 import { coinNameKR } from '../../constants/NameParser';
-import { bannerList, BannerList } from '../../constants/BannerList';
 
 import Input from '../../atoms/Input';
-import Nav from '../../components/Nav';
 import Tab from '../../components/Tab';
 import Table from '../../components/Table';
 import Slider from '../../components/Slider/Slider';
@@ -23,7 +21,6 @@ const Home = (props: any) => {
   const [currencyList, setCurrencyList] = useState<any>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState<number>();
-  const [favorites, setFavorites] = useState<any[]>([]);
 
   const store = useStores();
   const router = useRouter();
@@ -35,9 +32,9 @@ const Home = (props: any) => {
     }, 1000);
   }, [currencyList]);
 
-  // useEffect(() => {
-  //   getTicker();
-  // }, []);
+  useEffect(() => {
+    getTicker();
+  }, []);
 
   const getTicker = async () => {
     try {
@@ -52,9 +49,6 @@ const Home = (props: any) => {
       const response: any = await CallApi(data);
       const responseJson: any = await response.json();
       if (response.status === 200) {
-        // if (searchValue) {
-        //   const filter = Object.keys(responseJson.data);
-        // }
         setCurrencyList(responseJson.data);
       }
     } catch (e) {
@@ -93,7 +87,6 @@ const Home = (props: any) => {
 
   const onAddFavorites = (name: string, e: { stopPropagation: () => void }) => {
     e.stopPropagation();
-    // const favorites = getCookie('favoriteCoins') || [];
     let favorites: any = localStorage.getItem('favoriteCoins');
     if (favorites !== undefined && favorites !== null) {
       favorites = JSON.parse(favorites);
@@ -131,18 +124,9 @@ const Home = (props: any) => {
     return (
       <header className={styles.header_wrap}>
         <div className={styles.banner_wrap}>
-          {/* {bannerList.map((item: BannerList, i: number) => {
-            return (
-              <div key={i} className={styles.banner_box} onClick={() => window.open(item.url, '_blank')}>
-                <Image src={item.src} alt="BannerImage" width={278} height={144} />
-              </div>
-            );
-          })} */}
           <Slider />
         </div>
-        {/* <div className={styles.introduce_wrap}> */}
         <div className={styles.hs_introduce_wrap}>
-          {/* <div className={styles.introduce_title}>암호화폐 모의투자</div> */}
           <div style={{ padding: 30 }}>
             <div>
               <h2 style={{ margin: 0 }}>암호화폐 모의투자</h2>
@@ -171,29 +155,12 @@ const Home = (props: any) => {
               backgroundImage: `url("https://images.unsplash.com/photo-1604594849809-dfedbc827105?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80")`,
             }}></div>
         </div>
-        {/* </div>
-        <div className={styles.introduce_wrap}>
-          <div className={styles.introduce_title}>암호화폐 모의투자</div>
-          <div className={styles.introduce_description}>
-            BITMOI에서 실전처럼 암호화폐 투자를 체험해보세요! <br />
-            참가자들의 수익률 현황은 랭킹에서 확인하실 수 있습니다!
-          </div>
-          <div className={styles.introduce_button_wrap}>
-            <div className={styles.button_wrap} onClick={() => moveToExchange('BTC')}>
-              모의투자
-            </div>
-            <div className={styles.button_wrap} onClick={() => moveToRanking()}>
-              랭킹
-            </div>
-          </div>
-        </div> */}
       </header>
     );
   };
 
   const tbodyData = () => {
     let keys = Object.keys(currencyList);
-    // const favoriteCoins = getCookie('favoriteCoins') || [];
     if (typeof window !== 'undefined') {
       let favoriteCoins: any = localStorage.getItem('favoriteCoins');
       if (favoriteCoins !== undefined) {
@@ -202,64 +169,64 @@ const Home = (props: any) => {
         favoriteCoins = [];
       }
 
-    if (query.tab === 'favorites') {
-      keys = favoriteCoins;
-    }
-
-    if (searchValue) {
-      keys = keys.filter(
-        (v: string) => v.includes(searchValue.toUpperCase()) || coinNameKR[v]?.includes(searchValue.toUpperCase())
-      );
-    }
-    if (Math.ceil(keys?.length / 30) !== totalPage) {
-      setTotalPage(Math.ceil(keys?.length / 30));
-    }
-    return keys?.map((name: string, i: number) => {
-      const currentPrice = currencyList[name]?.closing_price;
-      const accTradeValue = currencyList[name]?.acc_trade_value_24H;
-      const dayToDayFluctate = getDayToDayFluctate(name, 'krw');
-      const dayToDayFluctateRate = getDayToDayFluctate(name, 'rate');
-      const nameKR: string = coinNameKR[name];
-      if (name === 'date') {
-        return;
+      if (query.tab === 'favorites') {
+        keys = favoriteCoins;
       }
-      return (
-        <tr key={i} className={styles.table_row} onClick={() => moveToExchange(name)}>
-          <td className={styles.table_favorites} onClick={(e: any) => onAddFavorites(name, e)}>
-            {favoriteCoins?.includes(name) ? (
-              <Image src="/images/star.png" alt="Favorite Image" width={14} height={14} />
-            ) : (
-              <Image src="/images/star_empty.png" alt="Favorite Empty Image" width={14} height={14} />
-            )}
-          </td>
-          <td className={styles.table_asset_column}>
-            <div style={{ fontSize: '15px' }}>{nameKR}</div>
-            <div style={{ fontSize: '12px', color: '#a4a4a4' }}>{`${name} / KRW`}</div>
-          </td>
-          <td className={styles.table_current_price}>
-            {`${currentPrice < 1 ? currentPrice : costComma(currentPrice)} 원`}
-          </td>
-          <td
-            className={styles.table_fluctate}
-            style={
-              Math.sign(Number(dayToDayFluctateRate)) === 1
-                ? { color: '#F75467' }
-                : Math.sign(Number(dayToDayFluctateRate)) === 0
-                ? { color: '#282828' }
-                : { color: '#4386F9' }
-            }>
-            <span>{`${signPositiveNumber.signPricePositive(Number(dayToDayFluctate))} 원 `}</span>
-            <span>{`(${signPositiveNumber.signRatePositive(Number(dayToDayFluctateRate))} %)`}</span>
-          </td>
-          <td className={styles.table_accumulate_trade}>{`${costComma(Math.round(Number(accTradeValue)))} 원`}</td>
-          <td className={styles.table_exchange_wrap} onClick={() => moveToExchange(name)}>
-            <div className={styles.table_exchange}>{'거래하기'}</div>
-          </td>
-        </tr>
-      );
-    });
+
+      if (searchValue) {
+        keys = keys.filter(
+          (v: string) => v.includes(searchValue.toUpperCase()) || coinNameKR[v]?.includes(searchValue.toUpperCase())
+        );
+      }
+      if (Math.ceil(keys?.length / 30) !== totalPage) {
+        setTotalPage(Math.ceil(keys?.length / 30));
+      }
+      return keys?.map((name: string, i: number) => {
+        const currentPrice = currencyList[name]?.closing_price;
+        const accTradeValue = currencyList[name]?.acc_trade_value_24H;
+        const dayToDayFluctate = getDayToDayFluctate(name, 'krw');
+        const dayToDayFluctateRate = getDayToDayFluctate(name, 'rate');
+        const nameKR: string = coinNameKR[name];
+        if (name === 'date') {
+          return;
+        }
+        return (
+          <tr key={i} className={styles.table_row} onClick={() => moveToExchange(name)}>
+            <td className={styles.table_favorites} onClick={(e: any) => onAddFavorites(name, e)}>
+              {favoriteCoins?.includes(name) ? (
+                <Image src="/images/star.png" alt="Favorite Image" width={14} height={14} />
+              ) : (
+                <Image src="/images/star_empty.png" alt="Favorite Empty Image" width={14} height={14} />
+              )}
+            </td>
+            <td className={styles.table_asset_column}>
+              <div style={{ fontSize: '15px' }}>{nameKR}</div>
+              <div style={{ fontSize: '12px', color: '#a4a4a4' }}>{`${name} / KRW`}</div>
+            </td>
+            <td className={styles.table_current_price}>
+              {`${currentPrice < 1 ? currentPrice : costComma(currentPrice)} 원`}
+            </td>
+            <td
+              className={styles.table_fluctate}
+              style={
+                Math.sign(Number(dayToDayFluctateRate)) === 1
+                  ? { color: '#F75467' }
+                  : Math.sign(Number(dayToDayFluctateRate)) === 0
+                  ? { color: '#282828' }
+                  : { color: '#4386F9' }
+              }>
+              <span>{`${signPositiveNumber.signPricePositive(Number(dayToDayFluctate))} 원 `}</span>
+              <span>{`(${signPositiveNumber.signRatePositive(Number(dayToDayFluctateRate))} %)`}</span>
+            </td>
+            <td className={styles.table_accumulate_trade}>{`${costComma(Math.round(Number(accTradeValue)))} 원`}</td>
+            <td className={styles.table_exchange_wrap} onClick={() => moveToExchange(name)}>
+              <div className={styles.table_exchange}>{'거래하기'}</div>
+            </td>
+          </tr>
+        );
+      });
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
