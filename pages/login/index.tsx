@@ -24,10 +24,6 @@ const Login = () => {
   const password = useRef<any>();
   const { authStore } = store;
 
-  useEffect(() => {
-    if (password.current.value?.trim().length !== 0 && email.trim().length !== 0) setIsActiveBtn(true);
-  }, [email, password.current?.value]);
-
   const emailValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     // validate email
@@ -65,7 +61,7 @@ const Login = () => {
 
   const loginFunction = async () => {
     const data = {
-      url: 'http://52.78.124.218:9000/user/login',
+      url: 'http://44.198.67.139:9000/user/login',
       method: 'POST',
       body: {
         email: email,
@@ -142,19 +138,15 @@ const Login = () => {
         <div className={styles.password_text}>Password</div>
         <input className={styles.input} placeholder={'비밀번호'} type="password" ref={password} />
         <div className={styles.warning}>{passwordWarning && passwordWarningMessage}</div>
-        <div>
-          <Button
-            btnText="로그인"
-            className={isActiveBtn ? styles.login_button_active : styles.login_button}
-            btnClick={(e: any) => loginValidation(e)}
-          />
+        <div className={styles.button_wrap}>
+          <Button btnText="로그인" className={styles.login_button_active} btnClick={(e: any) => loginValidation(e)} />
         </div>
         <div className={styles.signup_button}>
           <div className={styles.signup} onClick={() => goSignup()}>{`회원가입`}</div>
-          <div>{'|'}</div>
+          {/* <div>{'|'}</div>
           <div className={styles.signup} onClick={() => resetPassword()}>
             {'비밀번호 재설정'}
-          </div>
+          </div> */}
         </div>
       </form>
     </div>

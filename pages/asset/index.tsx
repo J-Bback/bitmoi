@@ -85,7 +85,7 @@ export default function Asset({}: Props) {
     const data = {
       disabledErrorHandler: true,
       method: 'GET',
-      url: 'http://52.78.124.218:9000/user/wallet',
+      url: 'http://44.198.67.139:9000/user/wallet',
     };
 
     try {
@@ -101,7 +101,7 @@ export default function Asset({}: Props) {
 
   const getOrderBookHistory = async () => {
     try {
-      const url = 'http://52.78.124.218:9000/orderbook/user';
+      const url = 'http://44.198.67.139:9000/orderbook/user';
       const data = {
         method: 'GET',
         url: url,
@@ -119,7 +119,7 @@ export default function Asset({}: Props) {
 
   // const getOrderBookHistory = async () => {
   //   try {
-  //     const url = 'http://52.78.124.218:9000/orderbook';
+  //     const url = 'http://44.198.67.139:9000/orderbook';
   //     const data = {
   //       method: 'GET',
   //       url: url,

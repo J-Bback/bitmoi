@@ -253,7 +253,7 @@ const Exchange = (props: any) => {
     // const orderState = orderType === 'market' ? 'execute' : 'wait';
     try {
       const type = bidOrAsk === '매수' ? 'bid' : 'ask';
-      const url = 'http://52.78.124.218:9000/orders';
+      const url = 'http://44.198.67.139:9000/orders';
       const data = {
         method: 'POST',
         url: url,
@@ -285,7 +285,7 @@ const Exchange = (props: any) => {
 
   const cancelOrder = async (orderbookId: number) => {
     try {
-      const url = `http://52.78.124.218:9000/order/cancel/${orderbookId}`;
+      const url = `http://44.198.67.139:9000/order/cancel/${orderbookId}`;
       const data = {
         method: 'GET',
         url: url,
@@ -303,7 +303,7 @@ const Exchange = (props: any) => {
 
   const getOrderBookHistory = async () => {
     try {
-      const url = 'http://52.78.124.218:9000/orderbook/user';
+      const url = 'http://44.198.67.139:9000/orderbook/user';
       const data = {
         method: 'GET',
         url: url,
@@ -321,7 +321,7 @@ const Exchange = (props: any) => {
 
   const getTransactionHistory = async (userId: number) => {
     try {
-      const url = `http://52.78.124.218:9000/executions/${userId}`;
+      const url = `http://44.198.67.139:9000/executions/${userId}`;
       const data = {
         method: 'GET',
         url: url,

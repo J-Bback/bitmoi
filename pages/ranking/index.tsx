@@ -44,7 +44,7 @@ const Ranking = () => {
     const data = {
       disabledErrorHandler: true,
       method: 'GET',
-      url: 'http://52.78.124.218:9000/user/ranking',
+      url: 'http://44.198.67.139:9000/user/ranking',
     };
 
     try {
@@ -62,7 +62,7 @@ const Ranking = () => {
     const data = {
       disabledErrorHandler: true,
       method: 'GET',
-      url: `http://52.78.124.218:9000/user/asset/${userId}`,
+      url: `http://44.198.67.139:9000/user/asset/${userId}`,
     };
 
     try {
