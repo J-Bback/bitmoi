@@ -50,7 +50,7 @@
       height: 20px;
       word-break: keep-all;    
     }
-    .login_button {
+    .login_button_active {
       @include center_mid();
       width: 100%;
       height: 52px;
@@ -59,6 +59,18 @@
       border-radius: 30px;
       color: $brand-color;
       background-color: $main-color;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .login_button {
+      @include center_mid();
+      width: 100%;
+      height: 52px;
+      margin-top: 10px;
+      border: 1px solid #eeeeee;
+      border-radius: 30px;
+      color: #eeeeee;
+      background-color: #575757;
       font-size: 20px;
       cursor: pointer;
     }

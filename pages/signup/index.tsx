@@ -47,7 +47,7 @@ const Login = () => {
       return alert('이메일 형식을 확인해주세요.');
     }
     const data = {
-      url: `http://52.78.124.218:9000/user/check`,
+      url: `http://44.198.67.139:9000/user/check`,
       method: 'POST',
       body: { email: email },
     };
@@ -68,7 +68,7 @@ const Login = () => {
 
   const signupFunction = async () => {
     const data = {
-      url: 'http://52.78.124.218:9000/user/join',
+      url: 'http://44.198.67.139:9000/user/join',
       body: {
         email: email,
         password: password.current.value,
